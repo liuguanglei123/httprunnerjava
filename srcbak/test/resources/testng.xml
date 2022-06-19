@@ -1,9 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd">
-<suite name="testSuite" verbose="1">
-    <test name="httprunnerjava">
-        <packages>
-            <package name="com.httprunnerjava.showstep_notcase"/>
-        </packages>
-    </test>
-</suite>
