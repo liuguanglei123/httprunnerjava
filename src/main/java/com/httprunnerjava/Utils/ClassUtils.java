@@ -32,7 +32,7 @@ public class ClassUtils {
         }
 
         try{
-            ca = Class.forName("com.httprunnerjava.Debugtalk");
+            ca = Class.forName("com.httprunnerjava.DefaultDebugtalk");
         }catch (ClassNotFoundException e2){
             log.error("com.httprunnerjava.Debugtalk类未找到，请检查hrun.jar当前版本文件是否正确！");
         }
