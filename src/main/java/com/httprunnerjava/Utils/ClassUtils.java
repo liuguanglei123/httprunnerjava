@@ -23,8 +23,9 @@ public class ClassUtils {
             }
             catch (Exception e){
                 int lastIndex = packageName.lastIndexOf(".");
-                if(lastIndex == -1)
+                if (lastIndex == -1) {
                     break;
+                }
                 packageName = packageName.substring(0,lastIndex);
                 continue;
             }

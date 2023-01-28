@@ -38,13 +38,18 @@ public class LazyContent<T> implements Serializable {
             }
             return new LazyContent(varMap);
         }
-        else
+        else {
             return new LazyContent(obj);
+        }
     }
 
+    /**
+     * 递归提取解析的字符串中的变量名，比如this is $foo1, and that is $foo2，经过解析后会返回foo1 foo2
+     * @return 从string中解析出来的变量名
+     * TODO:TEST 需要验证一下一个string中包含多个变量的场景
+     */
     public Set<String> extractVariables(){
-        // extract all variables in content recursively.
-        // TODO：这里应该支持加载list set map 等类型的数据的，，但是现在不支持需要后续支持
+        // info：原版这里是支持list map等多种数据类型的，但是因为java的强类型原因，这里不好支持，暂时不做了，后续看情况支持
         if(rawValue instanceof String){
             return Parse.regexFindallVariables((String)rawValue);
         }

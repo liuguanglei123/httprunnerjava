@@ -5,7 +5,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>com.httprunnerjava</groupId>
   <artifactId>hrun</artifactId>
-  <version>0.3.35</version>
+  <version>0.3.36</version>
   <name>httprunnerjava</name>
   <url>https://github.com/liuguanglei123/httprunner_for_java_form_cc</url>
   <description>httprunnerjava</description>
@@ -91,13 +91,13 @@
       <artifactId>jinjava</artifactId>
       <version>2.6.0</version>
     </dependency>
-    <!-- https://mvnrepository.com/artifact/mysql/mysql-connector-java -->
+
     <dependency>
       <groupId>mysql</groupId>
       <artifactId>mysql-connector-java</artifactId>
       <version>8.0.25</version>
     </dependency>
-    <!-- https://mvnrepository.com/artifact/redis.clients/jedis -->
+
     <dependency>
       <groupId>redis.clients</groupId>
       <artifactId>jedis</artifactId>
@@ -175,25 +175,15 @@
   <distributionManagement>
     <!-- maven公库 -->
     <!-- profile为reslease -->
-<!--    <snapshotRepository>-->
-<!--      <id>release</id>-->
-<!--      <url>https://s01.oss.sonatype.org/content/repositories/snapshots/</url>-->
-<!--    </snapshotRepository>-->
-<!--    <repository>-->
-<!--      <id>release</id>-->
-<!--      <url>https://s01.oss.sonatype.org/service/local/staging/deploy/maven2/</url>-->
-<!--    </repository>-->
+    <snapshotRepository>
+      <id>release</id>
+      <url>https://s01.oss.sonatype.org/content/repositories/snapshots/</url>
+    </snapshotRepository>
+    <repository>
+      <id>release</id>
+      <url>https://s01.oss.sonatype.org/service/local/staging/deploy/maven2/</url>
+    </repository>
 
-    <!-- profile为cc2
-    mvn deploy -P cc2-->
-        <snapshotRepository>
-          <id>cc2</id>
-          <url>https://s01.oss.sonatype.org/content/repositories/snapshots/</url>
-        </snapshotRepository>
-        <repository>
-          <id>cc2</id>
-          <url>http://39.104.72.132:8081/repository/maven-releases/</url>
-        </repository>
   </distributionManagement>
   <profiles>
     <profile>

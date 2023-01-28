@@ -4,9 +4,7 @@ import com.httprunnerjava.HttpRunner;
 import com.httprunnerjava.model.Config;
 import com.httprunnerjava.model.Step;
 import com.httprunnerjava.model.component.RunRequest;
-import lombok.Data;
 import lombok.Getter;
-import lombok.Setter;
 
 import java.util.ArrayList;
 import java.util.List;

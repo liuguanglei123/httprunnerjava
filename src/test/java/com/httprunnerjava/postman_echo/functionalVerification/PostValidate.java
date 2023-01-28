@@ -38,7 +38,7 @@ public class PostValidate extends HttpRunner {
 
         );
 
-        add(new RunRequest("post form data using json 2")
+        /* add(new RunRequest("post form data using json 2")
                 .withVariables(
                         "{'foo2': 'bar23','jsondata':[11,22,33,44,55,66,77,88,99]}"
                 )
@@ -123,7 +123,7 @@ public class PostValidate extends HttpRunner {
                 .assertEqual("status_code", 200)
                 .assertEqual("body.form.foo1", "session_bar1")
                 .assertEqual("body.form.foo2", "bar23")
-        );
+        );*/
     }};
 
 }

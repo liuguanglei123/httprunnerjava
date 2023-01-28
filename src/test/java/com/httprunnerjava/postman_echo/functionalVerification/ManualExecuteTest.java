@@ -20,5 +20,6 @@ public class ManualExecuteTest {
         params.put("userId","5FXXXXX");
         ManualAllTest manualAllTest = new ManualAllTest();
         manualAllTest.manualExecuteAllTestStep(params);
+        manualAllTest = null;
     }
 }

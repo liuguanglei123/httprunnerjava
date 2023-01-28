@@ -25,39 +25,41 @@ public class Loader {
     // 这里和hrun原版稍有差别，如果以后想支持多线程执行，那么线程变量必不可少，其实这里也是一种推测，目前也用不到
     public static final ThreadLocal<ProjectMeta> projectMetaContext = new ThreadLocal<>();
 
-    public static void setProjectMeta(final ProjectMeta projectMeta) {
-        projectMetaContext.set(projectMeta);
-    }
-
-    public static ProjectMeta getProjectMeta() {
-        return projectMetaContext.get();
-    }
-
     public static void clear() {
         projectMetaContext.remove();
     }
 
     /**
-     * TODO：目前在仅支持class执行用例的情况下，loadProjectMeta并无任何实际意义
+     * 目前在仅支持class执行用例的情况下，test_path值一定为空
+     * @param test_path 这个是原版带过来的参数，暂时用不到，可以认为其值一定为 null
     */
-    public static void loadProjectMeta (LazyString test_path){
+    public static ProjectMeta loadProjectMeta (LazyString test_path){
 
         if(test_path == null) {
-            loadProjectMeta(null, false);
+            return loadProjectMeta(null, false);
         }
-        loadProjectMeta(test_path.getRawValue(),false);
+        // TODO：下面的逻辑暂时用不到
+        return loadProjectMeta(test_path.getRawValue(),false);
     }
 
-    public static void loadProjectMeta (String testPackagePath, boolean reload){
-        if(getProjectMeta() != null && !reload)
-            return;
+    /**
+     *
+     * @param testPackagePath
+     * @param reload 这个是原版带过来的参数，暂时用不到，可以认为其值一定为 false
+     * @return
+     */
+    public static ProjectMeta loadProjectMeta (String testPackagePath, boolean reload){
+        if(HttpRunner.getProjectMeta() != null && !reload) {
+            return HttpRunner.getProjectMeta();
+        }
 
         ProjectMeta projectMeta = new ProjectMeta();
-        if(!Strings.isNullOrEmpty(testPackagePath))
+        if(!Strings.isNullOrEmpty(testPackagePath)) {
             projectMeta.setFunctions(ClassUtils.getDefaultDebugtalkClass(testPackagePath));
+        }
 
         projectMeta.setEnvVar(loadEnvFile());
-        projectMetaContext.set(projectMeta);
+        return projectMeta;
     }
 
     public static Class<?> loadBuiltinFunctions() {

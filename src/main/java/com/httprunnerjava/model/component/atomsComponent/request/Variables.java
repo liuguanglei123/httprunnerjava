@@ -2,6 +2,7 @@ package com.httprunnerjava.model.component.atomsComponent.request;
 
 
 import com.alibaba.fastjson.JSON;
+import com.httprunnerjava.exception.HrunExceptionFactory;
 import com.httprunnerjava.exception.ParseError;
 import com.httprunnerjava.exception.VariableNotFound;
 import com.httprunnerjava.model.component.moleculesComponent.TRequest;
@@ -47,10 +48,8 @@ public class Variables implements Serializable {
         }
     }
 
-    // TODO：要注意这里可不是深复制哦
     public Variables update(final Variables anotherVar){
         Optional.ofNullable(anotherVar).ifPresent( a -> {
-//            Variables tempVar = (Variables)CommonUtils.deedeepcopy_objpcopy_obj(anotherVar);
             this.getContent().putAll(anotherVar.getContent());
         });
         return this;
@@ -92,7 +91,7 @@ public class Variables implements Serializable {
         return this.content.keySet();
     }
 
-    public LazyContent get(String key){
+    public LazyContent<?> get(String key){
         return this.content.get(key);
     }
 
@@ -109,30 +108,31 @@ public class Variables implements Serializable {
      *
      *
      */
-    public Variables parse(Class functionsMapping) throws ParseError {
+    public Variables parse(Class<?> functionsMapping) throws ParseError {
         Variables parsedVariables = new Variables();
 
         while(!Objects.equals(parsedVariables.size(), size())){
             for(String varName : keySet()){
-                if(parsedVariables.keySet().contains(varName))
+                if(parsedVariables.keySet().contains(varName)) {
                     continue;
+                }
 
-                LazyContent varValue = get(varName);
-                Set<String> variables = varValue.extractVariables();
+                LazyContent<?> varValue = get(varName);
+                Set<String> varKeys = varValue.extractVariables();
 
-                if (variables.contains(varName)) {
-                    log.error("参variablesMapping数： " + varName + "存在重复包含，无法继续执行。");
-                    throw new ParseError("变量被重复定义多次，无法确定实际执行的值。");
+                if (varKeys.contains(varName)) {
+                    log.error("参数" + varName + "存在重复包含，无法继续执行");
+                    HrunExceptionFactory.create("E10001");
                 }
 
                 List<String> notDefinedVariables =
-                        variables.stream().filter( e->
+                        varKeys.stream().filter( e ->
                                 !keySet().contains(e)
-                        ).collect(Collectors.toList());
+                            ).collect(Collectors.toList());
 
                 if(!notDefinedVariables.isEmpty()){
                     log.error("参数:" + varName + " 不存在，请确认！！！");
-                    throw new ParseError("参数不存在");
+                    HrunExceptionFactory.create("E10002");
                 }
 
                 Object parsedValue = null;
@@ -144,10 +144,11 @@ public class Variables implements Serializable {
 
                 // TODO:其实这里的逻辑有点重复，以后可以进行调整，在前面的逻辑中，一个LazyString实际上已经被解析完成了，
                 //  但是这里又重新定义了一次，下次如果需要用到这个变量，又要重新解析一次了
-                if(parsedValue instanceof Map || parsedValue instanceof List)
+                if(parsedValue instanceof Map || parsedValue instanceof List) {
                     parsedVariables.put(varName, JSON.toJSONString(parsedValue));
-                else
+                } else {
                     parsedVariables.put(varName, parsedValue);
+                }
             }
         }
 

@@ -76,8 +76,9 @@ public class Config {
     }
 
     public Config withLocalDebug(Boolean isProxy){
-        if(isProxy)
+        if(isProxy) {
             log.warn("已开启代理模式，所有请求将请求到 127.0.0.1:8888，请确认代理服务器状态。");
+        }
 
         this.isProxy = isProxy;
         return this;
@@ -93,15 +94,7 @@ public class Config {
         return this;
     }
 
-//    public TConfig perform(){
-//        return new TConfig(
-//                this.name,
-//                this.baseUrl,
-//                this.verify,
-//                this.variables,
-//                this.export,
-//                this.path,
-//                this.weight
-//        );
-//    }
+    public void updateVariables(Variables var){
+        variables.update(var);
+    }
 }

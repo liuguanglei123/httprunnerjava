@@ -44,13 +44,13 @@ import java.util.*;
 @Slf4j
 public class HttpRunner {
 
-    // 用例集（testcase）层级的参数化配置，其中可以包含 baseUrl，case层级的参数变量，导出字段等
+    // 用例集（testcase）层级的参数化配置，其中可以包含 baseUrl，用例集层级的参数变量，导出字段等
     private Config config;
 
     // 用例集的步骤，步骤可以是单个step，也可以嵌套其他case
     private List<Step> teststeps;
 
-    //标注测试用例执行结果
+    // 标注测试用例执行结果
     private Boolean success = false;
 
     // 指定的caseId，没有的话会自动生成一个uuid
@@ -68,7 +68,7 @@ public class HttpRunner {
     //上下文信息中产生的变量，比如第一个接口中导出的A字段作为某个变量，可以在第二个接口请求中传入
     private Variables sessionVariables = new Variables();
 
-    private ProjectMeta projectMeta;
+    private static ProjectMeta projectMeta;
 
     // time
     private long startAt;
@@ -95,33 +95,39 @@ public class HttpRunner {
      * 初始化tConfig和tTestSteps对象
      */
     public void initCheck() {
-        setConfig(Optional.ofNullable(getConfig()).orElseGet(() -> new Config("default config")));
+        setConfig(
+                Optional.ofNullable(getConfig())
+                        .orElseGet(() -> new Config("default config"))
+        );
+
         if( null == getTeststeps() || 0 == this.getTeststeps().size()){
-            HrunExceptionFactory.create("E0003");
+            HrunExceptionFactory.create("E00001");
         }
     }
 
-    /*
-    用例执行前执行该方法，加载变量和project数据
+    /**
+     * 用例执行前执行该方法，加载用例集的变量（类似全局变量一样）和 projectMeta 对象数据
+     * projectMeta用于存储一些环境变量（env，暂时还没有用到）和 自定义方法类等信息
      */
     @BeforeClass
     public void beforeTestStart() {
         initCheck();
-        projectMeta = Optional.ofNullable(projectMeta).orElseGet( () ->{
-                    Loader.loadProjectMeta(
-                            Optional.ofNullable(getConfig().getPath())
-                                    .orElseGet(() -> {
-                                        log.info("config中未指定debugtalk文件位置，默认优先获取测试执行类所在目录，其次取HttpRunner所在目录下的默认Debugtal文件");
-                                        return new LazyString(this.getClass().getPackage().getName());
-                                    }));
-                    return Loader.projectMetaContext.get();
-                }
+        projectMeta = Optional.ofNullable(projectMeta).orElseGet( () ->
+                Loader.loadProjectMeta(
+                    Optional.ofNullable(getConfig().getPath())
+                        .orElseGet(() -> {
+                            //TODO: debugtalk类文件位置当前无法指定，以后支持yml文件后可能会考虑支持
+                            log.info("config中未指定debugtalk文件位置，默认获取测试执行类所在目录及逐级上层目录，其次取HttpRunnerForJava包下的默认Debugtal文件");
+                            return new LazyString(this.getClass().getPackage().getName());
+                        }))
         );
 
-        if (Strings.isNullOrEmpty(caseId))
+        if (Strings.isNullOrEmpty(caseId)) {
             caseId = UUID.randomUUID().toString();
+        }
 
         Variables configVariables = getConfig().getVariables();
+        // TODO: 需要测试
         configVariables.update(sessionVariables);
 
         configVariables.update(projectMeta.getEnvVar());
@@ -143,7 +149,7 @@ public class HttpRunner {
     }
 
     public void beforeRunTestcase(TestCase testcase) {
-        this.parseConfig(getConfig());
+        parseConfig(getConfig());
         startAt = System.currentTimeMillis();
         stepDatas = new ArrayList<>();
 
@@ -154,8 +160,11 @@ public class HttpRunner {
         extractedVariables = new Variables().update(getConfig().getVariables());
     }
 
+
     /**
      * 初始化tConfig和tTestSteps对象
+     * @param step 实际执行过程中的步骤
+     * @param params TODO: 暂时无用
      */
     @Test(dataProvider = "HrunDataProvider")
     public void testStart(Step step, Map<String, Object> params) {
@@ -203,6 +212,7 @@ public class HttpRunner {
         duration = System.currentTimeMillis() - startAt;
     }
 
+    @Override
     public int hashCode() {
         return hashCode;
     }
@@ -317,8 +327,7 @@ public class HttpRunner {
     }
 
     public void parseConfig(Config config) {
-        getConfig().getVariables()
-                .update(sessionVariables);
+        getConfig().updateVariables(sessionVariables);
         getConfig().setVariables(
                 getConfig().getVariables().parse(projectMeta.getFunctions())
         );
@@ -521,6 +530,10 @@ public class HttpRunner {
             log.error("手动执行单步case失败！");
             throw e;
         }
+    }
+
+    public static ProjectMeta getProjectMeta(){
+        return projectMeta;
     }
 
 }
