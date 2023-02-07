@@ -2,6 +2,8 @@ package com.httprunnerjava.model.component.atomsComponent.request;
 
 import com.alibaba.fastjson.JSONException;
 import com.alibaba.fastjson.JSONObject;
+import com.httprunnerjava.exception.HrunExceptionFactory;
+import com.httprunnerjava.model.Enum.HookType;
 import com.httprunnerjava.model.lazyLoading.LazyString;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
@@ -15,23 +17,54 @@ import java.util.Map;
 @Data
 public class Hooks {
 
+    private List<HookString> content = new ArrayList<>();
+
+    public void add(String rawHook){
+        try {
+            JSONObject parsedStr = JSONObject.parseObject(rawHook);
+            if(parsedStr instanceof Map && parsedStr.size() == 1) {
+                HookString hookString = new HookString(HookType.MapHook, parsedStr.toJSONString(),false);
+                content.add(hookString);
+            }else{
+                log.error("Invalid hook format: " + rawHook);
+            }
+        } catch (JSONException e) {
+            HookString hookString = new HookString(HookType.StringHook, rawHook, false);
+            content.add(hookString);
+        }
+    }
+
+    public void addNoThrowException(String rawHook){
+        try {
+            JSONObject parsedStr = JSONObject.parseObject(rawHook);
+            if(parsedStr instanceof Map && parsedStr.size() == 1) {
+                HookString hookString = new HookString(HookType.MapHook, parsedStr.toJSONString(),true);
+                content.add(hookString);
+            }else{
+                log.error("Invalid hook format: " + rawHook);
+            }
+        } catch (JSONException e) {
+            HookString hookString = new HookString(HookType.StringHook, rawHook, true);
+            content.add(hookString);
+        }
+    }
+
     @Data
     public class HookString{
-        private Integer type;
+        private HookType type;
         private LazyString funcHook;
         private Map<LazyString, LazyString> mapHook;
         //钩子函数失败后，是否可以跳过继续执行该case的标记
         private Boolean noThrowException;
 
-        public HookString(Integer type, String hookStr,Boolean noThrowException){
-            if(type == 1) {
-                this.type = 1;
+        public HookString(HookType type, String hookStr,Boolean noThrowException){
+            if(type.equals(HookType.StringHook)) {
+                this.type = HookType.StringHook;
                 funcHook = new LazyString(hookStr);
                 this.noThrowException = noThrowException;
-            }
-            else if(type == 2){
+            } else if(type.equals(HookType.MapHook)){
                 mapHook = new HashMap<>();
-                this.type = 2;
+                this.type = HookType.MapHook;
                 JSONObject temp = JSONObject.parseObject(hookStr);
                 for(Map.Entry<String,Object> each : temp.entrySet()){
                     LazyString key = new LazyString(each.getKey());
@@ -42,45 +75,18 @@ public class Hooks {
             }
         }
 
-        public String toString(){
-            if(type == 1){
-                return funcHook.getRawValue();
-            }else{
-                return "{" + mapHook.keySet().iterator().next().toString() + ":" +
-                        getMapHook().values().iterator().next().getRawValue() + "}";
+        @Override
+        public String toString() {
+            switch (type) {
+                case StringHook:
+                    return funcHook.getRawValue();
+                case MapHook:
+                    return "{" + mapHook.keySet().iterator().next().toString() + ":" +
+                            getMapHook().values().iterator().next().getRawValue() + "}";
+                default:
+                    HrunExceptionFactory.create("E10003");
+                    return "error!!!";
             }
         }
     };
-
-    private List<HookString> content = new ArrayList<>();
-
-    public void add(String raw_hook){
-        try {
-            JSONObject parsedStr = JSONObject.parseObject(raw_hook);
-            if(parsedStr instanceof Map && parsedStr.size() == 1) {
-                HookString hookString = new HookString(2, parsedStr.toJSONString(),false);
-                content.add(hookString);
-            }else{
-                log.error("Invalid hook format: " + raw_hook);
-            }
-        } catch (JSONException e) {
-            HookString hookString = new HookString(1, raw_hook, false);
-            content.add(hookString);
-        }
-    }
-
-    public void addNoThrowException(String raw_hook){
-        try {
-            JSONObject parsedStr = JSONObject.parseObject(raw_hook);
-            if(parsedStr instanceof Map && parsedStr.size() == 1) {
-                HookString hookString = new HookString(2, parsedStr.toJSONString(),true);
-                content.add(hookString);
-            }else{
-                log.error("Invalid hook format: " + raw_hook);
-            }
-        } catch (JSONException e) {
-            HookString hookString = new HookString(1, raw_hook, true);
-            content.add(hookString);
-        }
-    }
 }

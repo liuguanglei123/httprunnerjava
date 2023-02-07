@@ -22,7 +22,7 @@ public class Comparator<T> {
 
     public void objectEequals(T checkalue, T expectValue) {
         if (!checkalue.equals(expectValue)) {
-            log.error("期望值是：" + checkalue + ",实际值是：" + expectValue);
+            log.error("期望值是：" + expectValue + ",实际值是：" + checkalue);
             throw new CompareError("比对结果与预期不一致");
         }
     }

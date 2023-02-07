@@ -100,8 +100,9 @@ public class ResponseObject {
             Object expect_item = each.getExpectValue();
             if(expect_item instanceof String){
                 expectValue = (new LazyString((String)expect_item)).parse(variables, functionsMapping).getEvalValue();
-            }else
+            }else {
                 expectValue = expect_item;
+            }
             // message
 //                String message = each.getMessage();
             //TODO: 低优先级 parse message with config/teststep/extracted variables
@@ -117,19 +118,21 @@ public class ResponseObject {
 //            }
 
             //TODO:日志需要优化
-            String validate_msg = String.format("\nassert %s %s %s(type is %s)",
+            String validate_msg = String.format("assert %s %s %s(type is %s)",
                     check_item,
                     assert_method,
                     expectValue,
                     expectValue == null ? "NULL" : expectValue.getClass());
+
             try{
                 if(check_item_valued == null){
                     if( expectValue == null
-                            || String.valueOf(expectValue).equals("NULL")
+                            || String.valueOf(expectValue).toUpperCase().equals("NULL")
                             || String.valueOf(expectValue).equals("None")) {
                         ;
                     }else{
-                        HrunExceptionFactory.create("E0011");
+                        log.error("要导出的变量："+ check_item + "不存在");
+                        HrunExceptionFactory.create("E20004");
                     }
                 } else {
                     Comparator<?> comparator = new Comparator(check_item_valued);
@@ -151,10 +154,10 @@ public class ResponseObject {
                         failures.add(validate_msg);
                     }else{
                         //如果捕获的异常不属于HrunBizException，则是反射方法执行时出错，需要输出详细的错误信息
-                        log.error("work exception" + HrunBizException.toStackTrace(e));
+                        log.error("执行过程中出现比对错误，该错误非hrun可捕获的问题，stackTrace信息为：\n" + HrunBizException.toStackTrace(e));
                     }
                 } else {
-                    log.error("work exception" + ExcpUtil.getStackTraceString(e));
+                    log.error("执行过程中出现比对错误，原因是：" + e.getMessage());
                 }
             }
         }
@@ -210,8 +213,9 @@ public class ResponseObject {
     }
 
     public Variables extract(HashMap<String,String> extractors, Variables variables_mapping, Class<?> functionsMapping) {
-        if(extractors == null || extractors.size() == 0)
+        if(extractors == null || extractors.size() == 0) {
             return new Variables();
+        }
 
         HashMap<String,Object> extract_mapping = new HashMap<>();
         for(Map.Entry<String,String> each : extractors.entrySet()){

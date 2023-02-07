@@ -57,17 +57,21 @@ public class LazyContent<T> implements Serializable {
         return new HashSet<>();
     }
 
-    //用来计算实际懒加载对象所存储的值，但是实际上对于LazyContent对象来说没啥用，只针对于LazyString类型需要进行计算
-    //这里写一个对象也只是为了兼容LazyContent调用的时候不会报错
-    public LazyContent parse(Variables variablesMapping, Class<?> functionsMapping) {
-        if(rawValue instanceof List){
-            for(LazyContent each : (List<LazyContent>)rawValue){
-                each.parse(variablesMapping,functionsMapping);
+    /**
+     * 用来计算实际懒加载对象所存储的值，对于LazyContent类型的值，会进入如下逻辑，对于LazyString类型的值，会进入LazyString中重写的parse方法
+     * @param variablesMapping 加载过程中用到的变量集合
+     * @param functionsMapping 自定义方法
+     * @return 返回LazyContent本身，对于LazyString类型的变量来说，其parsedValue等值是计算过的
+     */
+    public LazyContent<T> parse(Variables variablesMapping, Class<?> functionsMapping) {
+        if (rawValue instanceof List) {
+            for (LazyContent<T> each : (List<LazyContent<T>>) rawValue) {
+                each.parse(variablesMapping, functionsMapping);
             }
-        }else if(rawValue instanceof Map){
-            for(Map.Entry<LazyContent,LazyContent> each : ((Map<LazyContent,LazyContent>)rawValue).entrySet()){
-                each.getKey().parse(variablesMapping,functionsMapping);
-                each.getValue().parse(variablesMapping,functionsMapping);
+        } else if (rawValue instanceof Map) {
+            for (Map.Entry<LazyContent<T>, LazyContent<T>> each : ((Map<LazyContent<T>, LazyContent<T>>) rawValue).entrySet()) {
+                each.getKey().parse(variablesMapping, functionsMapping);
+                each.getValue().parse(variablesMapping, functionsMapping);
             }
         }
 

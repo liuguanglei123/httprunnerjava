@@ -19,7 +19,7 @@ public class ClassUtils {
         while(true){
             try{
                 ca = Class.forName(packageName + ".Debugtalk");
-                log.info("在package" + packageName + "下找到Debugtalk类，执行过程中的自定义方法将以该类内容为准");
+                log.debug("在package: " + packageName + "下找到Debugtalk类，执行过程中的自定义方法将以该类内容为准");
             }
             catch (Exception e){
                 int lastIndex = packageName.lastIndexOf(".");

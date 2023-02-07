@@ -40,20 +40,23 @@ public class Headers implements Serializable {
 
     public Headers(okhttp3.Headers rawHeaders){
         rawHeaders.forEach( each -> {
-            if(each.getSecond() instanceof String)
+            if(each.getSecond() instanceof String) {
                 content.put(String.valueOf(each.getFirst()), new LazyString(String.valueOf(each.getSecond())));
-            else
+            } else {
                 content.put(String.valueOf(each.getFirst()), new LazyContent(each.getSecond()));
+            }
         });
     }
 
     public Headers parse(Variables variablesMapping, Class function) {
-        if(this.content == null || this.content.size() == 0)
+        if(this.content == null || this.content.size() == 0) {
             return this;
+        }
 
         for(LazyContent value : content.values()){
-            if(value instanceof LazyString)
-                ((LazyString)value).parse(variablesMapping, function);
+            if(value instanceof LazyString) {
+                ((LazyString) value).parse(variablesMapping, function);
+            }
         }
         return this;
     }
@@ -76,10 +79,11 @@ public class Headers implements Serializable {
         this.getContent().putAll(headers.getContent());
     }
 
-    public void setdefault(String key,String value){
-        this.content.put(key,new LazyString(value));
+    public void set(String key,String value){
+        this.content.putIfAbsent(key,new LazyString(value));
     }
 
+    @Override
     public String toString(){
         StringBuffer result = new StringBuffer("{\n");
         this.getContent().forEach( (k,v) -> result.append("    " + k + ":" + v.getEvalValue() + "\n"));

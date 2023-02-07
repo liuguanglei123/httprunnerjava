@@ -5,6 +5,7 @@ import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONException;
 import com.alibaba.fastjson.JSONObject;
 import com.alibaba.fastjson.serializer.SerializerFeature;
+import com.httprunnerjava.exception.HrunExceptionFactory;
 import com.httprunnerjava.exception.ParseError;
 import com.httprunnerjava.model.lazyLoading.LazyString;
 import lombok.Data;
@@ -48,7 +49,7 @@ public class ReqJson {
     public ReqJson parse(Variables variables_mapping, Class functions_mapping) {
         if(Objects.equals(type, STRING_OBJ_TYPE)) {
             String parsedStringObj = strObj.parse(variables_mapping, functions_mapping).getEvalString();
-            parseSrcString(parsedStringObj);
+            parseSrcString(parsedStringObj,strObj);
         }else if(Objects.equals(type, MAP_OBJ_TYPE)){
             this.mapObj = parseJson(mapObj,variables_mapping, functions_mapping);
         }else{
@@ -96,7 +97,7 @@ public class ReqJson {
         return result;
     }
 
-    public void parseSrcString(String parsedStringObj){
+    public void parseSrcString(String parsedStringObj,LazyString strObj){
         try{
             mapObj = JSONObject.parseObject(parsedStringObj);
             type = MAP_OBJ_TYPE;
@@ -106,9 +107,9 @@ public class ReqJson {
                 type = LIST_OBJ_TYPE;
             }catch (Exception e2){
                 log.error("解析json出现问题，该字符串无法解析成JSONObject或者JSONArray，" +
-                        "该报错可能是因为json串中引号使用不当造成，请参考github示例类request_with_variables_test");
-                log.error("待解析的字符串是：" + parsedStringObj);
-                throw new ParseError("");
+                        "该报错可能是因为json串中引号使用不当造成的");
+                log.error("待解析的字符串是：" + strObj.getRawValue());
+                HrunExceptionFactory.create("E00003");
             }
         }
     }

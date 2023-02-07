@@ -22,6 +22,7 @@ import com.httprunnerjava.exception.HrunExceptionFactory;
 import com.httprunnerjava.exception.ParamsError;
 import com.httprunnerjava.exception.ValidationFailureException;
 import com.httprunnerjava.model.*;
+import com.httprunnerjava.model.Enum.HookType;
 import com.httprunnerjava.model.Enum.MethodEnum;
 import com.httprunnerjava.model.component.atomsComponent.response.*;
 import com.httprunnerjava.model.component.atomsComponent.request.*;
@@ -117,7 +118,7 @@ public class HttpRunner {
                     Optional.ofNullable(getConfig().getPath())
                         .orElseGet(() -> {
                             //TODO: debugtalk类文件位置当前无法指定，以后支持yml文件后可能会考虑支持
-                            log.info("config中未指定debugtalk文件位置，默认获取测试执行类所在目录及逐级上层目录，其次取HttpRunnerForJava包下的默认Debugtal文件");
+                            log.debug("config中未指定debugtalk文件位置，默认获取测试执行类所在目录及逐级上层目录，其次取HttpRunnerForJava包下的默认Debugtal文件");
                             return new LazyString(this.getClass().getPackage().getName());
                         }))
         );
@@ -141,7 +142,7 @@ public class HttpRunner {
         //        Allure.description(String.format("TestCase ID: %s", __case_id));
 
         log.info(
-                "Start to run testcase: {}, TestCase ID: {}",
+                "开始执行用例: {}, TestCaseID为: {}",
                 getConfig().getName().getEvalString(), getCaseId()
         );
 
@@ -157,29 +158,29 @@ public class HttpRunner {
                 session == null ? new HttpSession(this) : session
         );
 
-        extractedVariables = new Variables().update(getConfig().getVariables());
+        extractedVariables = new Variables().update(getConfigVar());
     }
 
 
     /**
      * 初始化tConfig和tTestSteps对象
      * @param step 实际执行过程中的步骤
-     * @param params TODO: 暂时无用
+     * @param params 适用于手动执行某个测试集合（或某个步骤）的场景，用于往里传参，对于用例的扑通执行场景暂无意义
      */
     @Test(dataProvider = "HrunDataProvider")
     public void testStart(Step step, Map<String, Object> params) {
-        Variables configVariables = getConfig().getVariables();
+        Variables configVariables = getConfigVar();
         if (params != null && !params.isEmpty()) {
             configVariables.update(params);
         }
 
         // override variables
         // step variables > extracted variables from previous steps
-        step.setVariables(Variables.mergeVariables(getConfig().getVariables(), step.getVariables()));
+        step.setVariables(Variables.mergeVariables(step.getVariables(), extractedVariables));
         // step variables > testcase config variables
-        step.setVariables(Variables.mergeVariables(sessionVariables, step.getVariables()));
-
-        step.setVariables(Variables.mergeVariables(extractedVariables, step.getVariables()));
+        step.setVariables(Variables.mergeVariables(step.getVariables(), getConfigVar()));
+        // step variables > testcase config variables
+//        step.setVariables(Variables.mergeVariables(sessionVariables, step.getVariables()));
 
         step.setVariables(step.getVariables().parse(projectMeta.getFunctions()));
 
@@ -190,13 +191,17 @@ public class HttpRunner {
             }
             extractMapping = this.runStep(step);
         } catch (Exception e){
-            log.error("用例执行过程中出现错误，请检查！");
+            log.error("用例执行过程中出现错误，用例尚未执行完成，请检查！");
             throw e;
         }
 
         extractedVariables.update(extractMapping);
     }
 
+    /**
+     * testng的参数构造器，暂时还不支持 parameterized方法
+     * @return
+     */
     @DataProvider(name = "HrunDataProvider")
     public Iterator<Object[]> createData() {
         List<Object[]> steps = new ArrayList<>();
@@ -219,6 +224,8 @@ public class HttpRunner {
 
     /**
      * 执行step，step类型可能是某个request，也可能是嵌套的其他testcase
+     * @param step 待执行的用例
+     * @return extract中的所有变量
      */
     public Map<String,Object> runStep(Step step) {
         log.info("run step begin: {} >>>>>>", step.getName());
@@ -238,25 +245,29 @@ public class HttpRunner {
         return stepData.getExportVars();
     }
 
+    /**
+     * 执行测试用例中的request部分
+     * @param step 待执行的用例内容
+     * @return StepData对象，包含一些执行数据和用例状态
+     */
     public StepData runStepRequest(Step step) {
-        ResponseObject.setCurrentRespBody(null);
         StepData stepData = new StepData(step.getName());
 
         //TODO: 低优先级 deal upload request
         // prepare_upload_step(step,this.__project_meta.getFuntions());
         // request_dict.remove("upload");
 
-        Optional.of(step.getSetupHooks()).ifPresent(setupHooks->
-                callHooks(setupHooks, step.getVariables(), "setup request")
-        );
-
         TRequest parsedRequestDict = step.getRequest().parse(
                 step.getVariables(), projectMeta.getFunctions()
         );
 
-        parsedRequestDict.getHeaders().setdefault("HRUN-Request-ID",
+        parsedRequestDict.getHeaders().set("Hrun-Request-ID",
                 String.format("HRUN-%s-%s", caseId, System.currentTimeMillis()));
         step.getVariables().update("request", parsedRequestDict);
+
+        Optional.of(step.getSetupHooks()).ifPresent(setupHooks->
+                callHooks(setupHooks, step.getVariables(), "setup request")
+        );
 
         // prepare arguments
         MethodEnum method = parsedRequestDict.getMethod();
@@ -265,7 +276,7 @@ public class HttpRunner {
         String url = CommonUtils.buildUrl(getConfig().getBaseUrl().getRawValue(), urlPath);
         parsedRequestDict.setVerify(getConfig().getVerify());
 
-        ResponseObject respObj = null;
+        ResponseObject respObj;
 
         Response resp = session.request(method, url, parsedRequestDict);
         respObj = new ResponseObject(resp);
@@ -273,7 +284,7 @@ public class HttpRunner {
         step.getVariables().update("response", respObj);
 
         Optional.of(step.getTeardownHooks()).ifPresent(tearDownHooks->
-                callHooks(tearDownHooks, step.getVariables(), "setup request")
+                callHooks(tearDownHooks, step.getVariables(), "teardown request")
         );
 
         HashMap<String, String> extractors = step.getExtract();
@@ -328,22 +339,22 @@ public class HttpRunner {
 
     public void parseConfig(Config config) {
         getConfig().updateVariables(sessionVariables);
-        getConfig().setVariables(
-                getConfig().getVariables().parse(projectMeta.getFunctions())
-        );
-        getConfig().setName(
-                getConfig().getName().parse(getConfig().getVariables(), projectMeta.getFunctions())
-        );
-        getConfig().setBaseUrl(
-                getConfig().getBaseUrl().parse(getConfig().getVariables(), projectMeta.getFunctions())
-        );
+        getConfigVar().parse(projectMeta.getFunctions());
+        getConfigName().parse(getConfigVar(), projectMeta.getFunctions());
+        getConfigBaseUrl().parse(getConfigVar(), projectMeta.getFunctions());
     }
 
+    /**
+     * 调用钩子函数
+     * @param hooks 要执行的钩子函数对象
+     * @param stepVariables 用例步骤变量，执行变量的时候可能用得到
+     * @param hookMsg 钩子函数消息，一般传入“setup”或者“tearDown“表示钩子函数类型
+     */
     public void callHooks(Hooks hooks, Variables stepVariables, String hookMsg) {
         log.info("call hook actions: {}", hookMsg);
         for (Hooks.HookString hook : hooks.getContent()) {
-            if (hook.getType() == 1) {
-                // format 1: "${func()}"
+            if (hook.getType().equals(HookType.StringHook)) {
+                // 待执行的钩子函数格式 1: "${func(...$param)}"
                 log.debug("call hook function: {}", hook.getFuncHook());
                 try{
                     hook.getFuncHook().parse(stepVariables, projectMeta.getFunctions());
@@ -352,35 +363,38 @@ public class HttpRunner {
                         log.error("钩子函数执行异常，执行的钩子函数是：" + hook.toString());
                         throw e;
                     }
-                    log.warn("钩子函数执行异常，但不会终端用例执行，出现错误的钩子函数是：" + hook.toString());
+                    log.warn("钩子函数执行异常，但不会终止用例执行，出现错误的钩子函数是：" + hook.toString());
                 }
-            } else if(hook.getType() == 2 && hook.getMapHook().size() == 1) {
-                // format 2: {"var": "${func()}"}
+            } else if(hook.getType().equals(HookType.MapHook) && hook.getMapHook().size() == 1) {
+                // 待执行的钩子函数格式 2: {"var": "${func(...$param)}"}
                 Map.Entry<LazyString,LazyString> entry = hook.getMapHook().entrySet().iterator().next();
                 try{
                     entry.getValue().parse(
                             stepVariables, projectMeta.getFunctions()
                     );
+
+                    log.debug(
+                            "call hook function: {}, got value: {}",
+                            entry.getValue().getRawValue(),
+                            entry.getValue().getEvalString()
+                    );
+                    log.debug(
+                            "assign variable: {} = {}",
+                            entry.getKey().getRawValue(),
+                            entry.getValue().getEvalString()
+                    );
+                    stepVariables.put(
+                            entry.getKey().getRawValue(),entry.getValue().getEvalValue()
+                    );
+
                 }catch (Exception e){
                     if(!hook.getNoThrowException()) {
                         log.error("钩子函数执行异常，执行的钩子函数是：" + hook.toString());
                         throw e;
                     }
-                    log.warn("钩子函数执行异常，但不会终端用例执行，出现错误的钩子函数是：" + hook.toString());
+                    log.warn("钩子函数执行异常，但不会终止用例执行，出现错误的钩子函数是：" + hook.toString());
                 }
-                log.debug(
-                        "call hook function: {}, got value: {}",
-                        entry.getValue().getRawValue(),
-                        entry.getValue().getEvalString()
-                );
-                log.debug(
-                        "assign variable: {} = {}",
-                        entry.getKey().getRawValue(),
-                        entry.getValue().getEvalString()
-                );
-                stepVariables.put(
-                        entry.getKey().getRawValue(),entry.getValue().getEvalValue()
-                );
+
             }else{
                 log.error("Invalid hook format: {}", hook);
             }
@@ -534,6 +548,18 @@ public class HttpRunner {
 
     public static ProjectMeta getProjectMeta(){
         return projectMeta;
+    }
+
+    public Variables getConfigVar(){
+        return getConfig().getVariables();
+    }
+
+    public LazyString getConfigName(){
+        return getConfig().getName();
+    }
+
+    public LazyString getConfigBaseUrl(){
+        return getConfig().getBaseUrl();
     }
 
 }

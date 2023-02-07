@@ -12,7 +12,7 @@ import java.util.List;
 @Getter
 public class SingleRequestStep extends HttpRunner {
 
-    private Config config = new Config("config_name with variables,the viriables is $$var1: $var1")
+    private Config config = new Config("最普通的测试用例,其中参数$$var1的值为: $var1，该值是从env文件中加载的")
             .base_url("https://postman-echo.com")
             .verify(false)
             .export("['foo3']");

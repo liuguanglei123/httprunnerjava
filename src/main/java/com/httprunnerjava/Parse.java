@@ -15,7 +15,7 @@ public class Parse {
     static public Pattern dolloar_regex_compile = Pattern.compile("(\\$\\$).*");
 
     // 自定义变量表达式的正则匹配 ${var} or $var
-    static public Pattern variable_regex_compile = Pattern.compile("\\$\\{(\\w+)}|\\$(\\w+).*",
+    static public Pattern variable_regex_compile = Pattern.compile("\\$\\{(\\w+)}.*|\\$(\\w+).*",
             Pattern.CASE_INSENSITIVE | Pattern.DOTALL);
 
     // 自定义函数表达式的正则匹配 ${func1($var_1, $var_3)}

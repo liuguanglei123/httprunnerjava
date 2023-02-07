@@ -1,7 +1,7 @@
 package com.httprunnerjava.model.lazyLoading;
 
 import com.httprunnerjava.Loader;
-import com.httprunnerjava.exception.HrunBizException;
+import com.httprunnerjava.exception.HrunExceptionFactory;
 import com.httprunnerjava.exception.ParseError;
 import com.httprunnerjava.exception.VariableNotFound;
 import com.httprunnerjava.model.component.atomsComponent.request.Variables;
@@ -27,6 +27,12 @@ public class LazyString extends LazyContent<String>{
 
     private Object parsedValue;
 
+    /**
+     * 用来计算实际懒加载对象所存储的值，对于LazyContent类型的值，会进入如下逻辑，对于LazyString类型的值，会进入LazyString中重写的parse方法
+     * @param variablesMapping 加载过程中用到的变量集合
+     * @param functionsMapping 自定义方法
+     * @return 返回LazyContent本身，对于LazyString类型的变量来说，其parsedValue等值是计算过的
+     */
     @Override
     public LazyString parse(Variables variablesMapping, Class functionsMapping) {
         if(variablesMapping == null){
@@ -73,7 +79,7 @@ public class LazyString extends LazyContent<String>{
                 Method func = getMappingFunction(func_name, functionsMapping);
 
                 String func_params_str = funcMatch.group(3);
-                Map function_meta = parseFunctionParams(func_params_str);
+                Map<String, Object> function_meta = parseFunctionParams(func_params_str);
                 List<LazyContent> args = (ArrayList<LazyContent>)function_meta.get("argsList");
                 Map kwargs = (Map)function_meta.get("kwargsMap");
                 List<Object> parsed_args = args.stream().map( arg ->
@@ -83,15 +89,16 @@ public class LazyString extends LazyContent<String>{
                 Object funcEvalValue = null;
                 try{
                     if(isBuiltInFunc(func_name)){
-                        Comparator comparator = new Comparator(parsed_args.get(0));
+                        Comparator<?> comparator = new Comparator(parsed_args.get(0));
                         funcEvalValue = func.invoke(comparator,parsed_args.get(0),parsed_args.get(1));
                     }else{
                         List<Object> funcParams = new ArrayList<Object>();
                         for(Object each : parsed_args){
-                            if(each instanceof LazyString)
+                            if(each instanceof LazyString){
                                 funcParams.add((((LazyString)each).parse(variablesMapping,functionsMapping)).getEvalString());
-                            else
+                            } else {
                                 funcParams.add(String.valueOf(each));
+                            }
                         }
                         Object obj = functionsMapping.newInstance();
                         if(funcParams.size() == 0){
@@ -101,9 +108,8 @@ public class LazyString extends LazyContent<String>{
                         }
                     }
                 }catch(Exception e){
-                    log.error("反射方法执行错误，原始错入信息如下：");
-                    log.error(HrunBizException.toStackTrace(e));
-                    throw new ParseError("E0004");
+                    log.error("反射方法执行错误，错误原因是：" + e.getMessage());
+                    HrunExceptionFactory.create("E20001");
                 }
 
                 String funcRawStr = "${" + func_name + "(" + func_params_str + ")}";
@@ -136,7 +142,11 @@ public class LazyString extends LazyContent<String>{
                 }
 
                 this.parsedString += String.valueOf(varValue);
-                remainParsedString = remainParsedString.substring(varName.length()+1);
+                if(remainParsedString.startsWith("${")){
+                    remainParsedString = remainParsedString.substring(varName.length() + 3);
+                } else {
+                    remainParsedString = remainParsedString.substring(varName.length() + 1);
+                }
             }
 
             matchStartPosition = remainParsedString.indexOf("$");
@@ -172,10 +182,11 @@ public class LazyString extends LazyContent<String>{
             classed[0] = Object.class;
             classed[1] = Object.class;
             method = built_in_functions.getMethod(functionName,classed);
-            if(method != null)
+            if(method != null) {
                 return method;
+            }
         }catch(Exception e){
-            log.debug(String.format("方法 %s 在builtin中没有找到",functionName));
+            log.debug(String.format("方法 %s 在hrun内置类中没有找到,将在debugtalk.java中继续寻找", functionName));
         }
 
         //TODO：debugtalk中的函数不支持函数重载
@@ -200,35 +211,38 @@ public class LazyString extends LazyContent<String>{
 
         if(method == null) {
             log.error("方法 " + functionName + " 不存在");
-            throw new ParseError("");
+            HrunExceptionFactory.create("E20002");
         }
 
         return null;
     }
 
-    public static Map parseFunctionParams(String params) {
+    public static Map<String, Object> parseFunctionParams(String params) {
         Map<String, Object> functionMeta = new HashMap<String, Object>() {{
             put("argsList", new ArrayList<LazyContent>());
             put("kwargsMap", new HashMap<String, Object>());
         }};
 
         String paramsStr = params.trim();
-        if (params.equals(""))
+        if (params.equals("")) {
             return functionMeta;
+        }
 
         String[] args_list = paramsStr.split(",");
         for (String arg : args_list) {
             arg = arg.trim();
             if (arg.contains("=")) {
                 String[] keyvalue = arg.split("=");
-                if (keyvalue.length > 2)
+                if (keyvalue.length > 2) {
                     throw new ParseError("");
+                }
                     //TODO:((Map) function_meta.get("kwargsMap")).put(keyvalue[0].trim(), parse_string_value(keyvalue[1].trim()));
             } else {
-                if(arg instanceof String)
+                if(arg instanceof String) {
                     ((List) functionMeta.get("argsList")).add(new LazyString(arg));
-                else
+                } else {
                     ((List) functionMeta.get("argsList")).add(new LazyContent(arg));
+                }
             }
         }
         return functionMeta;

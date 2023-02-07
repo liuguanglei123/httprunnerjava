@@ -142,8 +142,6 @@ public class Variables implements Serializable {
                     continue;
                 }
 
-                // TODO:其实这里的逻辑有点重复，以后可以进行调整，在前面的逻辑中，一个LazyString实际上已经被解析完成了，
-                //  但是这里又重新定义了一次，下次如果需要用到这个变量，又要重新解析一次了
                 if(parsedValue instanceof Map || parsedValue instanceof List) {
                     parsedVariables.put(varName, JSON.toJSONString(parsedValue));
                 } else {
@@ -173,11 +171,29 @@ public class Variables implements Serializable {
         put(tmpMap);
     }
 
-    public static Variables mergeVariables(Variables variablesToBeOverridden, Variables variables){
-        Variables variables1 = CommonUtils.deepcopy_obj(variablesToBeOverridden);
-        Variables variables2 = CommonUtils.deepcopy_obj(variables);
-        variables1.update(variables2);
-        return variables1;
+    /**
+     * 合并两个variables对象，会以第一个参数为基准，将第二个参数对象的各个值覆盖到第一个参数对象中
+     * @param variablesToBeOverridden 原参数对象，有更高的优先级
+     * @param variables 需要合并的对象，低优先级
+     * @return 合并后的新的variables对象
+     */
+    public static Variables mergeVariables(Variables variables,Variables variablesToBeOverridden){
+        Variables varBase = CommonUtils.deepcopy_obj(variablesToBeOverridden);
+        Variables varPriority = CommonUtils.deepcopy_obj(variables);
+
+        //TODO:原版有一段这样的逻辑，暂时不做了
+        /*
+            step_new_variables = {}
+            for key, value in variables.items():
+                if f"${key}" == value or "${" + key + "}" == value:
+                    # e.g. {"base_url": "$base_url"}
+                    # or {"base_url": "${base_url}"}
+                    continue
+
+                step_new_variables[key] = value
+         */
+        varBase.update(varPriority);
+        return varBase;
     }
 
     public Map<String,Object> toMap(){

@@ -163,7 +163,7 @@ public class HttpSession {
                 }catch (IOException e){
                     log.error("请求接口报错，请根据日志检查请求是否准确，报错原始信息如下");
                     log.error(HrunBizException.toStackTrace(e));
-                    HrunExceptionFactory.create("E0005");
+                    HrunExceptionFactory.create("E20003");
                 }
                 break;
             case POST:
@@ -195,7 +195,7 @@ public class HttpSession {
                 }catch (Exception e){
                     log.error("请求接口报错，请根据日志检查请求是否准确，报错原始信息如下");
                     log.error(HrunBizException.toStackTrace(e));
-                    HrunExceptionFactory.create("E0005");
+                    HrunExceptionFactory.create("E20003");
                 }
         }
 
@@ -203,20 +203,24 @@ public class HttpSession {
     }
 
     public void addHeaders(Headers headers, Request.Builder requestBuilder){
-        if(headers == null || headers.isEmpty())
+        if(headers == null || headers.isEmpty()) {
             return;
+        }
+
         for(Map.Entry<String, LazyContent> entry : headers.getContent().entrySet()){
             requestBuilder.addHeader(entry.getKey(),String.valueOf(entry.getValue().getEvalValue()));
         }
     }
 
     public HttpUrl parseUrl(String url, Params params){
-        if(params == null || params.getContent().size() == 0)
+        if(params == null || params.getContent().size() == 0) {
             return HttpUrl.parse(url);
+        }
 
         StringBuilder urlBuilder = new StringBuilder(url);
-        if(params.getContent().size() != 0)
+        if(params.getContent().size() != 0) {
             urlBuilder.append("?");
+        }
 
         params.getContent().entrySet().forEach( each ->
                 urlBuilder.append(each.getKey())
@@ -226,8 +230,9 @@ public class HttpSession {
         );
 
         url = urlBuilder.toString();
-        if(url.endsWith("&"))
-            url = url.substring(0,url.length()-1);
+        if(url.endsWith("&")) {
+            url = url.substring(0, url.length() - 1);
+        }
 
         return HttpUrl.parse(url);
     }

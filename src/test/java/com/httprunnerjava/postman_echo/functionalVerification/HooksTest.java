@@ -22,13 +22,15 @@ public class HooksTest extends HttpRunner {
 
     private List<Step> teststeps = new ArrayList<Step>(){{
         add(new RunRequest("get with params")
-                .setupHook("setup_hooks()")
-                .setupHook("{'accountId': '${getAccountId(3FXXXXXX)}'}")
-                .setupHook("{'userId': '${getUserId($user_id)}'}")
-                .setupHookNoThrowException("{'customeId': '${NoExistFunc()}'}")
+                .setupHook("${setup_hooks()}")
+                //以下两行写法类型是不支持的,setuphook中不支持注入变量
+//                .setupHook("{'accountId': '${getAccountId(3FXXXXXX)}'}")
+//                .setupHook("{'userId': '${getUserId($user_id)}'}")
+                .setupHookNoThrowException("${NoExistFunc($foo1)}")
+                .setupHookNoThrowException("{'userId': '${getUserId($user_id1)}'}")
                 .withVariables("{'foo1': 'bar11', 'foo2': 'bar21', 'sum_v': '${sum_two(1,2)}'}")
                 .get("/get")
-                .withParams("{'foo1': '$foo1', 'foo2': '$foo2', 'sum_v': '$sum_v', 'accountid': '$accountId','userId': '$userId'}")
+                .withParams("{'foo1': '$foo1', 'foo2': '$foo2', 'sum_v': '$sum_v'}")
                 .withHeaders("{'User-Agent': 'HttpRunner/${get_httprunner_version()}'}")
                 .teardownHook("teardown_hooks()")
                 .teardownHookNoThrowException("${NoExistFunc()}")
@@ -40,6 +42,7 @@ public class HooksTest extends HttpRunner {
                 .assertEqual("body.args.sum_v", "1002")
                 .assertEqual("body.args.foo2", "bar21")
         );
+
         add(new RunTestCase("request with testcase reference")
                 .withVariables("{'foo1': 'testcase_ref_bar1', 'expect_foo1': 'testcase_ref_bar1'}")
                 .setupHook("${sleep(0.1)}")

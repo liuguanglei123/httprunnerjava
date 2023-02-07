@@ -61,14 +61,18 @@ public class CommonUtils {
             return path;
         }
         else if(base_url != null && !base_url.equals("")){
-            if(base_url.matches(".*/"))
-                base_url = base_url.substring(0,base_url.length()-1);
-            if(path.matches("/.*"))
+            if(base_url.matches(".*/")) {
+                base_url = base_url.substring(0, base_url.length() - 1);
+            }
+
+            if(path.matches("/.*")) {
                 path = path.substring(1);
+            }
+
             return String.format("%s/%s",base_url,path);
         }
         else{
-            HrunExceptionFactory.create("E0018");
+            HrunExceptionFactory.create("E00002");
             return null;
         }
     }
