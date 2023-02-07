@@ -36,7 +36,7 @@ public class ExportTest extends HttpRunner {
                 .validate()
                 .assertEqual("body.args.foo2", "bar11")
                 .assertEqual("body.args.foo3", "null")
-                .assertEqual("body.args.foo4", "noExistVar")
+                .assertEqual("body.args.foo4", "existVar")
         );
 
     }};

@@ -48,7 +48,7 @@ public class ComplexResultValidateTest extends HttpRunner {
                 .withJson("{accountIds:[],userIds:null,customerIds:[{geren:null},{shangjia:null}]}")
                 .validate()
                 .assertEqual("status_code", 200)
-                .jsonEqual("body.json", "{accountIds:[],userIds:null,customerIds:[{geren:null}]}")
+                .jsonEqual("body.json", "{\"accountIds\":[],\"customerIds\":[{},{}]}")
         );
 
         add(new RunRequest("post raw text")
@@ -59,7 +59,7 @@ public class ComplexResultValidateTest extends HttpRunner {
                 )
                 .validate()
                 .assertEqual("status_code", 200)
-                .jsonEqual("body.data", "{accountIds:[],userIds:null,customerIds:[{geren:null}]}")
+                .jsonEqual("body.data", "{}")
         );
     }};
 

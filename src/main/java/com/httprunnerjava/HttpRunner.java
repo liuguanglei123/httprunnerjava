@@ -292,7 +292,7 @@ public class HttpRunner {
         stepData.setExportVars(extractMapping.toMap());
 
         Variables variablesMapping = step.getVariables();
-        variablesMapping.update((extractMapping));
+        variablesMapping.update(extractMapping);
 
         List<Validator> validators = step.getValidators();
         boolean sessionSuccess = false;
@@ -304,8 +304,9 @@ public class HttpRunner {
                 log.error("结果比对存在不一致!");
                 logReqRespDetails(url, method, parsedRequestDict, respObj);
                 duration = System.currentTimeMillis() - startAt;
-            }else
+            }else {
                 log.error("比对过程中发生异常，当作比对不一致处理！");
+            }
             throw e;
         } finally {
             success = sessionSuccess;
@@ -337,6 +338,10 @@ public class HttpRunner {
         log.error(errMsg);
     }
 
+    /**
+     * 解析config内容，比如将$var形式的变量转变成真正的值，还有将session中的变量覆盖到config变量中
+     * @param config
+     */
     public void parseConfig(Config config) {
         getConfig().updateVariables(sessionVariables);
         getConfigVar().parse(projectMeta.getFunctions());
