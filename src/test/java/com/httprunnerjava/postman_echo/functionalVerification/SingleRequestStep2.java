@@ -20,7 +20,7 @@ public class SingleRequestStep2 extends HttpRunner {
 
     private List<Step> teststeps = new ArrayList<Step>(){{
         add(new RunRequest("get with params")
-                .withVariables("{'key1':'value1-4','key2':'value2-4'}")
+                .withVariables("{'key1':'value1-4'}")
                 .get("/get")
                 .withParams("{'key1': '$key1', 'key2': '$key2'}")
                 .withHeaders("{'User-Agent': 'HttpRunner/${get_httprunner_version()}','header-num':12345}")

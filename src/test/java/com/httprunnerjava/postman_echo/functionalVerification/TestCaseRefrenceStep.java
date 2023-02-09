@@ -39,18 +39,18 @@ public class TestCaseRefrenceStep extends HttpRunner {
                 .setupHook("${setup_hooks()}")
                 .setupHookNoThrowException("${NoExistFunc($foo1)}")
                 .call(SingleRequestStep2.class)
-                .export("['value3']")
+                .export("['key3']")
                 .teardownHook("teardown_hooks()")
                 .teardownHookNoThrowException("${NoExistFunc()}")
         );
 
         add(new RunRequest("普通的用例步骤")
                 .get("/get")
-                .withParams("{'foo1': '$value3'}")
+                .withParams("{'foo1': '$key3'}")
                 .withHeaders("{'User-Agent': 'HttpRunner/${get_httprunner_version()}','header-num':12345}")
                 .validate()
                 .assertEqual("status_code", 200)
-                .assertEqual("body.args.foo1", "bar211111")
+                .assertEqual("body.args.foo1", "value1-4")
         );
     }};
 }

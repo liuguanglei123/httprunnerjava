@@ -13,7 +13,7 @@ import java.util.List;
 @Getter
 public class VariablesPriorityTest extends HttpRunner {
 
-    private Config config = new Config("config_name with variables,the viriables is $$foo: $foo1")
+    private Config config = new Config("验证testcase嵌套时的变量优先级")
             .variables("{'key1':'value1-1','key2':'value2-1'}")
             .base_url("https://postman-echo.com")
             .verify(false)
@@ -31,7 +31,7 @@ public class VariablesPriorityTest extends HttpRunner {
                 .withHeaders("{'User-Agent': 'HttpRunner/${get_httprunner_version()}','header-num':12345}")
                 .validate()
                 .assertEqual("status_code", 200)
-                .assertEqual("body.args.key3", "value1-2")
+                .assertEqual("body.args.key3", "value1-4")
                 .assertEqual("body.args.key4", "value2-2")
         );
 

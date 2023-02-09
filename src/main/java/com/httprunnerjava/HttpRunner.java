@@ -156,7 +156,7 @@ public class HttpRunner {
                 session == null ? new HttpSession(this) : session
         );
 
-        extractedVariables = new Variables().update(getConfigVar());
+        extractedVariables = new Variables();
     }
 
     /**
@@ -434,10 +434,9 @@ public class HttpRunner {
                 log.error("嵌套的testcase类中未包含config或teststep成员变量，无法执行用例");
             }
         } catch (Exception e) {
-            log.error("testcase嵌套内容执行失败，原始报错信息如下： \n " + HrunBizException.toStackTrace(e));
-            throw new ParamsError(
-                    "Invalid teststep referenced testcase" + step.toString()
-            );
+            log.error("testcase嵌套内容执行失败，原始报错信息如下： \n " + e.getMessage());
+            log.debug("testcase嵌套内容执行失败，原始报错信息如下： \n " + HrunBizException.toStackTrace(e));
+            HrunExceptionFactory.create("E20010");
         }
 
         Optional.of(step.getTeardownHooks()).ifPresent(tearDownHooks->
@@ -466,8 +465,10 @@ public class HttpRunner {
 
         Variables export_vars_mapping = new Variables();
         for (String var_name : export_var_names.getContent()) {
-            if (!sessionVariables.getContent().containsKey(var_name))
-                HrunExceptionFactory.create("E0069");
+            if (!sessionVariables.getContent().containsKey(var_name)) {
+                log.error("需要导出的变量 " + var_name +" 不存在");
+                HrunExceptionFactory.create("E20011");
+            }
 
             export_vars_mapping.getContent().put(var_name, sessionVariables.get(var_name));
         }
@@ -514,8 +515,9 @@ public class HttpRunner {
     }
 
     public HttpRunner withLocalDebug(Boolean isProxy){
-        if(isProxy)
+        if(isProxy) {
             log.warn("已开启代理模式，所有请求将请求到 127.0.0.1:8888，请确认代理服务器状态。");
+        }
 
         this.isProxy = isProxy;
         return this;

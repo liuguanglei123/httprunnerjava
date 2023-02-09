@@ -109,7 +109,7 @@ public class HttpSession {
         }catch (Exception e){
             log.error("创建HttpSession对象失败，失败原因是 %s",e.getMessage());
             log.debug(e.getStackTrace().toString());
-            HrunExceptionFactory.create("E0001");
+            HrunExceptionFactory.create("E20005");
         }
 
     }
@@ -259,7 +259,7 @@ public class HttpSession {
             // if requestContentType and "multipart/form-data" in requestContentType:
             //     requestBody = "upload file stream (OMITTED)"
         }catch (IOException e){
-            HrunExceptionFactory.create("E0006");
+            HrunExceptionFactory.create("E20006");
         }
 
         RequestData requestData = new RequestData(respObj.request().method(),
@@ -280,7 +280,7 @@ public class HttpSession {
             ResponseObject.setCurrentRespBody(respText);
         }catch (IOException e){
             // TODO:异常的处理
-            HrunExceptionFactory.create("E0007");
+            HrunExceptionFactory.create("E20007");
         }catch(JSONException e){
 
         }

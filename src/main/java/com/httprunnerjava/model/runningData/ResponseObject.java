@@ -62,7 +62,7 @@ public class ResponseObject {
                 body = JSONObject.parse(ResponseObject.getCurrentRespBody());
             }catch (Exception e){
                 log.error("reponseBody无法成功解析为json，请确认响应是否正确。");
-                HrunExceptionFactory.create("E0012");
+                HrunExceptionFactory.create("E20009");
             }
         });
     }
@@ -92,7 +92,7 @@ public class ResponseObject {
                 assert_func = LazyString.getMappingFunction(assert_method, functionsMapping);
             }catch (Exception e) {
                 log.error(String.valueOf(e.getStackTrace()));
-                HrunExceptionFactory.create("E0008");
+                HrunExceptionFactory.create("E20008");
             }
 
             // expect item
