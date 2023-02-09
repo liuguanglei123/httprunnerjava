@@ -14,38 +14,27 @@ import java.util.List;
 public class VariablesPriorityTest extends HttpRunner {
 
     private Config config = new Config("config_name with variables,the viriables is $$foo: $foo1")
-            .variables("{'foo1':'config_bar1','foo2':'config_bar2','expect_foo1':'config_bar1'," +
-                    "'expect_foo2': 'config_bar2', 'user_id': '4Fxxxxx'}")
+            .variables("{'key1':'value1-1','key2':'value2-1'}")
             .base_url("https://postman-echo.com")
             .verify(false)
             .export("['foo3']");
 
     private List<Step> teststeps = new ArrayList<Step>(){{
-
-        add(new RunTestCase("request with testcase reference")
-                .withVariables("{'foo1': 'testcase_ref_bar1', 'expect_foo1': 'testcase_ref_bar1'}")
-                .setupHook("${sleep(0.1)}")
-                .call(SingleRequestStep.class)
-                .teardownHook("${sleep(0.2)}")
+        add(new RunTestCase("嵌套的testcase")
+                .withVariables("{'key1':'value1-2','key2':'value2-2'}")
+                .call(SingleRequestStep2.class)
+                .export("['key3','key4']")
         );
-
-        add(new RunRequest("get with params")
-                .setupHook("setup_hooks()")
-                .setupHook("{'accountId': '${getAccountId(3FXXXXXX)}'}")
-                .setupHook("{'userId': '${getUserId($user_id)}'}")
-                .withVariables("{'foo1': 'bar11', 'foo2': 'bar21', 'sum_v': '${sum_two(1,2)}'}")
+        add(new RunRequest("普通的用例步骤")
                 .get("/get")
-                .withParams("{'foo1': '$foo3', 'foo2': '$foo2', 'sum_v': '$sum_v', 'accountid': '$accountId','userId': '$userId'}")
-                .withHeaders("{'User-Agent': 'HttpRunner/${get_httprunner_version()}'}")
-                .teardownHook("teardown_hooks()")
-                .extract()
-                .withJmespath("body.args.foo2", "foo3")
+                .withParams("{'key3': '$key3','key4': '$key4'}")
+                .withHeaders("{'User-Agent': 'HttpRunner/${get_httprunner_version()}','header-num':12345}")
                 .validate()
                 .assertEqual("status_code", 200)
-                .assertEqual("body.args.foo1", "bar11")
-                .assertEqual("body.args.sum_v", "1002")
-                .assertEqual("body.args.foo2", "bar21")
+                .assertEqual("body.args.key3", "value1-2")
+                .assertEqual("body.args.key4", "value2-2")
         );
+
     }};
 }
 

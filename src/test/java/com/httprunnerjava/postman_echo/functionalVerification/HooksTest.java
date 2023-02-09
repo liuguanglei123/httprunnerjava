@@ -22,17 +22,16 @@ public class HooksTest extends HttpRunner {
 
     private List<Step> teststeps = new ArrayList<Step>(){{
         add(new RunRequest("get with params")
-                .setupHook("${setup_hooks()}")
-                //以下两行写法类型是不支持的,setuphook中不支持注入变量
-//                .setupHook("{'accountId': '${getAccountId(3FXXXXXX)}'}")
-//                .setupHook("{'userId': '${getUserId($user_id)}'}")
-                .setupHookNoThrowException("${NoExistFunc($foo1)}")
-                .setupHookNoThrowException("{'userId': '${getUserId($user_id1)}'}")
+                .setupHook("setup_hooks()")
+                .setupHook("{'accountId': '${getAccountId(3FXXXXXX)}'}")
+                .setupHook("{'userId': '${getUserId($user_id)}'}")
+                .setupHookNoThrowException("{'customeId': '${NoExistFunc()}'}")
                 .withVariables("{'foo1': 'bar11', 'foo2': 'bar21', 'sum_v': '${sum_two(1,2)}'}")
                 .get("/get")
-                .withParams("{'foo1': '$foo1', 'foo2': '$foo2', 'sum_v': '$sum_v'}")
+                .withParams("{'foo1': '$foo1', 'foo2': '$foo2', 'sum_v': '$sum_v', 'accountid': '$accountId','userId': '$userId'}")
                 .withHeaders("{'User-Agent': 'HttpRunner/${get_httprunner_version()}'}")
-                .teardownHook("teardown_hooks()")
+                .teardownHook("${teardown_hooks()")
+                .teardownHook("${teardown_hooks()}")
                 .teardownHookNoThrowException("${NoExistFunc()}")
                 .extract()
                 .withJmespath("body.args.foo2", "foo3")
@@ -54,4 +53,3 @@ public class HooksTest extends HttpRunner {
         );
     }};
 }
-

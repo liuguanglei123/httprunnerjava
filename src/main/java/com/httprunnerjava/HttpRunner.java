@@ -34,12 +34,10 @@ import io.qameta.allure.Allure;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 import okhttp3.Response;
-import org.testng.annotations.AfterClass;
-import org.testng.annotations.BeforeClass;
-import org.testng.annotations.DataProvider;
-import org.testng.annotations.Test;
+import org.testng.annotations.*;
 
 import java.util.*;
+import java.util.Optional;
 
 @Data
 @Slf4j
@@ -161,7 +159,6 @@ public class HttpRunner {
         extractedVariables = new Variables().update(getConfigVar());
     }
 
-
     /**
      * 初始化tConfig和tTestSteps对象
      * @param step 实际执行过程中的步骤
@@ -237,7 +234,7 @@ public class HttpRunner {
             stepData = runStepTestcase(step);
         } else {
             log.debug(step.toString());
-            HrunExceptionFactory.create("E0002");
+            HrunExceptionFactory.create("E00004");
         }
 
         stepDatas.add(stepData);
@@ -257,17 +254,17 @@ public class HttpRunner {
         // prepare_upload_step(step,this.__project_meta.getFuntions());
         // request_dict.remove("upload");
 
+        Optional.of(step.getSetupHooks()).ifPresent(setupHooks->
+                callHooks(setupHooks, step.getVariables(), "setup request")
+        );
+
         TRequest parsedRequestDict = step.getRequest().parse(
                 step.getVariables(), projectMeta.getFunctions()
         );
 
-        parsedRequestDict.getHeaders().set("Hrun-Request-ID",
+        parsedRequestDict.getHeaders().set("hrunRequestID",
                 String.format("HRUN-%s-%s", caseId, System.currentTimeMillis()));
         step.getVariables().update("request", parsedRequestDict);
-
-        Optional.of(step.getSetupHooks()).ifPresent(setupHooks->
-                callHooks(setupHooks, step.getVariables(), "setup request")
-        );
 
         // prepare arguments
         MethodEnum method = parsedRequestDict.getMethod();
@@ -358,7 +355,7 @@ public class HttpRunner {
     public void callHooks(Hooks hooks, Variables stepVariables, String hookMsg) {
         log.info("call hook actions: {}", hookMsg);
         for (Hooks.HookString hook : hooks.getContent()) {
-            if (hook.getType().equals(HookType.StringHook)) {
+             if (hook.getType().equals(HookType.StringHook)) {
                 // 待执行的钩子函数格式 1: "${func(...$param)}"
                 log.debug("call hook function: {}", hook.getFuncHook());
                 try{
@@ -434,7 +431,7 @@ public class HttpRunner {
                         .withExport(stepExport)
                         .run();
             } else {
-                log.error("嵌套的testcase类中未包含config和teststep成员变量，或两者为空");
+                log.error("嵌套的testcase类中未包含config或teststep成员变量，无法执行用例");
             }
         } catch (Exception e) {
             log.error("testcase嵌套内容执行失败，原始报错信息如下： \n " + HrunBizException.toStackTrace(e));
@@ -452,18 +449,20 @@ public class HttpRunner {
         stepData.setSuccess(caseResult.getSuccess());
         this.success = caseResult.success;
 
-        if (stepData.getExportVars() != null && stepData.getExportVars().size() != 0)
+        if (stepData.getExportVars() != null && stepData.getExportVars().size() != 0) {
             log.info("export variables: {}", stepData.getExportVars());
+        }
 
         return stepData;
     }
     
     public Variables getExportVariables() {
         Export export_var_names;
-        if (export == null || export.getContent().size() == 0)
+        if (export == null || export.getContent().size() == 0) {
             export_var_names = getConfig().getExport();
-        else
+        } else {
             export_var_names = export;
+        }
 
         Variables export_vars_mapping = new Variables();
         for (String var_name : export_var_names.getContent()) {

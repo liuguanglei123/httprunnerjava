@@ -12,6 +12,9 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Matcher;
+
+import static com.httprunnerjava.Parse.function_regex_compile;
 
 @Slf4j
 @Data
@@ -22,16 +25,31 @@ public class Hooks {
     public void add(String rawHook){
         try {
             JSONObject parsedStr = JSONObject.parseObject(rawHook);
-            if(parsedStr instanceof Map && parsedStr.size() == 1) {
+            if(parsedStr instanceof Map
+                    && parsedStr.size() == 1
+                    && isValidFunc(String.valueOf(parsedStr.entrySet().iterator().next().getValue()))
+            ) {
                 HookString hookString = new HookString(HookType.MapHook, parsedStr.toJSONString(),false);
                 content.add(hookString);
             }else{
                 log.error("Invalid hook format: " + rawHook);
             }
         } catch (JSONException e) {
-            HookString hookString = new HookString(HookType.StringHook, rawHook, false);
-            content.add(hookString);
+            if(isValidFunc(String.valueOf(rawHook))){
+                HookString hookString = new HookString(HookType.StringHook, rawHook, false);
+                content.add(hookString);
+            }else {
+                log.error("Invalid hook format: " + rawHook);
+            }
         }
+    }
+
+    public Boolean isValidFunc(String funcStr){
+        Matcher funcMatch = function_regex_compile.matcher(funcStr);
+        if(funcMatch.matches()){
+            return true;
+        }
+        return false;
     }
 
     public void addNoThrowException(String rawHook){

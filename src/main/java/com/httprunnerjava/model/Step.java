@@ -93,6 +93,7 @@ public class Step {
         httpType = step.getRequest() == null ? "" : step.getRequest().getMethod().getMethod();
     }
 
+    @Override
     public String toString(){
         StringBuffer result = new StringBuffer()
                 .append("ApolloRunDate [")
@@ -106,13 +107,11 @@ public class Step {
                 .append("extract=" + Optional.ofNullable(extract).orElse(new HashMap<>()).toString() + ",")
                 .append("validators=" + Optional.ofNullable(validators).orElse(new ArrayList<>()).toString())
                 .append("]");
-
 //                .append("testcase=" + Optional.ofNullable(testcase).orElse(new H).toString() + "\n")
 //                .append("testcasestr=" + Optional.ofNullable(testcasestr).orElse("").toString() + "\n")
 //                .append("testcasecall=" + Optional.ofNullable(response).orElse(new Response()).toString() + "\n")
 //                .append("export=" + Optional.ofNullable(export).orElse(new Export()).toString() + ",\n")
 //                .append("validate_script: " + Optional.ofNullable(response).orElse(new Response()).toString() + "\n");
-
         return result.toString();
     }
 
