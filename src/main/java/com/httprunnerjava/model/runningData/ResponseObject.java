@@ -185,8 +185,9 @@ public class ResponseObject {
 
         try{
             String[] strArray = tempExpr.split("\\.");
-            if(tempExpr.length() == 0)
+            if(tempExpr.length() == 0) {
                 return "";
+            }
 
             if(strArray.length == 1){
                 if(strArray[0].matches("\\d+")){

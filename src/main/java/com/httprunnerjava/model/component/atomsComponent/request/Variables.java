@@ -3,9 +3,7 @@ package com.httprunnerjava.model.component.atomsComponent.request;
 
 import com.alibaba.fastjson.JSON;
 import com.httprunnerjava.exception.HrunExceptionFactory;
-import com.httprunnerjava.exception.ParseError;
 import com.httprunnerjava.exception.VariableNotFound;
-import com.httprunnerjava.model.component.moleculesComponent.TRequest;
 import com.httprunnerjava.model.lazyLoading.LazyContent;
 import com.httprunnerjava.model.lazyLoading.LazyString;
 import com.httprunnerjava.utils.CommonUtils;
@@ -95,7 +93,7 @@ public class Variables implements Serializable {
         return this.content.get(key);
     }
 
-    public Variables parse() throws ParseError {
+    public Variables parse() {
         return parse(null);
     }
 
@@ -108,7 +106,7 @@ public class Variables implements Serializable {
      *
      *
      */
-    public Variables parse(Class<?> functionsMapping) throws ParseError {
+    public Variables parse(Class<?> functionsMapping) {
         Variables parsedVariables = new Variables();
 
         while(!Objects.equals(parsedVariables.size(), size())){

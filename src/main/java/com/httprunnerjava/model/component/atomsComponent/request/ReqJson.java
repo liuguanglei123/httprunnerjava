@@ -6,7 +6,6 @@ import com.alibaba.fastjson.JSONException;
 import com.alibaba.fastjson.JSONObject;
 import com.alibaba.fastjson.serializer.SerializerFeature;
 import com.httprunnerjava.exception.HrunExceptionFactory;
-import com.httprunnerjava.exception.ParseError;
 import com.httprunnerjava.model.lazyLoading.LazyString;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;

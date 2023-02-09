@@ -3,7 +3,6 @@ package com.httprunnerjava;
 import com.alibaba.fastjson.JSONException;
 import com.httprunnerjava.exception.HrunBizException;
 import com.httprunnerjava.exception.HrunExceptionFactory;
-import com.httprunnerjava.exception.UnknowError;
 import com.httprunnerjava.model.Enum.MethodEnum;
 import com.httprunnerjava.model.component.atomsComponent.request.Headers;
 import com.httprunnerjava.model.component.atomsComponent.request.Params;

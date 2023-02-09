@@ -19,7 +19,6 @@ package com.httprunnerjava;
 import com.google.common.base.Strings;
 import com.httprunnerjava.exception.HrunBizException;
 import com.httprunnerjava.exception.HrunExceptionFactory;
-import com.httprunnerjava.exception.ParamsError;
 import com.httprunnerjava.exception.ValidationFailureException;
 import com.httprunnerjava.model.*;
 import com.httprunnerjava.model.Enum.HookType;

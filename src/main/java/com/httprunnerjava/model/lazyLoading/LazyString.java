@@ -2,7 +2,6 @@ package com.httprunnerjava.model.lazyLoading;
 
 import com.httprunnerjava.Loader;
 import com.httprunnerjava.exception.HrunExceptionFactory;
-import com.httprunnerjava.exception.ParseError;
 import com.httprunnerjava.exception.VariableNotFound;
 import com.httprunnerjava.model.component.atomsComponent.request.Variables;
 import com.httprunnerjava.builtin.Comparator;
@@ -153,7 +152,7 @@ public class LazyString extends LazyContent<String>{
             if(matchStartPosition == 0){
                 log.error("无法解析的字符串" + rawValue);
                 log.error("字符串中出现$但却无法解析，不属于$$ 变量或者方法的任何一种类型，请检查。");
-                throw new ParseError("");
+                HrunExceptionFactory.create("E00005");
             }
             if(matchStartPosition != -1){
                 this.parsedString += remainParsedString.substring(0,matchStartPosition);;
@@ -234,7 +233,7 @@ public class LazyString extends LazyContent<String>{
             if (arg.contains("=")) {
                 String[] keyvalue = arg.split("=");
                 if (keyvalue.length > 2) {
-                    throw new ParseError("");
+                    HrunExceptionFactory.create("E00006");
                 }
                     //TODO:((Map) function_meta.get("kwargsMap")).put(keyvalue[0].trim(), parse_string_value(keyvalue[1].trim()));
             } else {
