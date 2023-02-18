@@ -9,11 +9,6 @@ import lombok.Getter;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * @Author: ChuCan
- * @CreatedDate: 2022-04-21-0:30
- * @Description:
- */
 @Getter
 public class ManualAllTest extends HttpRunner {
     private Config config = new Config("ManualAllTest")

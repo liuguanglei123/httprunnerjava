@@ -10,11 +10,6 @@ import lombok.Getter;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * @Author: ChuCan
- * @CreatedDate: 2022-04-21-16:21
- * @Description:
- */
 @Getter
 public class JsonUtilTest extends HttpRunner{
     private Config config = new Config("config_name with variables,the viriables is $$var1: $var1")

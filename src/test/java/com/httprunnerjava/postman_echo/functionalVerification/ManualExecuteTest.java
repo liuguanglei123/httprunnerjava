@@ -7,11 +7,6 @@ import org.testng.annotations.Test;
 import java.util.HashMap;
 import java.util.Map;
 
-/**
- * @Author: ChuCan
- * @CreatedDate: 2022-04-21-0:11
- * @Description:
- */
 public class ManualExecuteTest {
 
     @Test
@@ -20,6 +15,5 @@ public class ManualExecuteTest {
         params.put("userId","5FXXXXX");
         ManualAllTest manualAllTest = new ManualAllTest();
         manualAllTest.manualExecuteAllTestStep(params);
-        manualAllTest = null;
     }
 }

@@ -5,11 +5,6 @@ import org.testng.annotations.Test;
 
 import java.util.*;
 
-/**
- * @Author: chucan
- * @CreatedDate: 2023-02-18 19:50
- * @Description:
- */
 public class CommonUtilsTest {
     @Test
     public void genCartesianProductTest(){

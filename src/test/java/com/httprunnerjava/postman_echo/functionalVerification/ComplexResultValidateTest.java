@@ -9,11 +9,6 @@ import lombok.Getter;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * @Author: ChuCan
- * @CreatedDate: 2022-04-23-15:51
- * @Description:
- */
 @Getter
 public class ComplexResultValidateTest extends HttpRunner {
     private Config config = new Config("ComplexResultValidateTest")

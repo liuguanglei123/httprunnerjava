@@ -4,13 +4,8 @@ import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
-import java.util.Map;
 
-/**
- * @Author: chucan
- * @CreatedDate: 2023-02-17 12:03
- * @Description:
- */
+
 @Target({ ElementType.TYPE })
 @Retention(RetentionPolicy.RUNTIME)
 public @interface Parameters {
