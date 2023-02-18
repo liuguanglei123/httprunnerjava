@@ -5,7 +5,6 @@ import com.httprunnerjava.exception.HrunExceptionFactory;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.*;
-import java.nio.charset.StandardCharsets;
 import java.util.*;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -22,8 +21,9 @@ public class CommonUtils {
     public static <T extends Serializable> T deepcopy_obj(T data){
         //深复制，源码用的是python中自带的deepcopy通过递归实现的，这里通过字节流的复制实现的，百度到的方法
         /*deepcopy dict data, ignore file object (_io.BufferedReader)*/
-        if(data == null)
+        if(data == null) {
             return data;
+        }
 
         return clone(data);
     }
@@ -77,29 +77,73 @@ public class CommonUtils {
         }
     }
 
-    public static List<Map<String,Object>> gen_cartesian_product(List<List<Map<String,Object>>> args){
+    public static List<Map<String,Object>> genCartesianProduct(List<List<Map<String,Object>>> args){
         if(args == null || args.size() == 0){
             return new ArrayList<>();
         }else if(args.size() == 1){
             return args.get(0);
         }
 
-        List<Map<String,Object>> product_list = new ArrayList<>();
+        List<Map<String,Object>> productList = new ArrayList<>();
         if(args.size()==2){
+            if(args.get(0).size()==0 || args.get(1).size()==0){
+                HrunExceptionFactory.create("E00010");
+            }
+
             for(int index=0; index<args.get(0).size(); index++){
                 for(int index2=0; index2<args.get(1).size(); index2++) {
                     Map<String,Object> temp = new HashMap<>();
                     temp.putAll(args.get(0).get(index));
                     temp.putAll(args.get(1).get(index2));
-                    product_list.add(temp);
+                    productList.add(temp);
                 }
             }
         }else{
-            List<Map<String,Object>> other_value_cartesian = gen_cartesian_product(args.subList(1,args.size()));
+            List<Map<String,Object>> other_value_cartesian = genCartesianProduct(args.subList(1,args.size()));
             List<List<Map<String,Object>>> parsedArgs = Stream.of(other_value_cartesian,args.get(0)).collect(Collectors.toList());
-            return gen_cartesian_product(parsedArgs);
+            return genCartesianProduct(parsedArgs);
         }
 
-        return product_list;
+        return productList;
     }
+
+    public static List<List> cartesianProduct(List... lists) {
+        List first = transformation(lists[0]);
+        for (int i = 0; i < lists.length - 1; i++) {
+            first = match(first, lists[i + 1]);
+        }
+        return first;
+    }
+
+    public static List<List> match(List<List> lists, List container1) {
+        List<List> r = new ArrayList<>();
+        for (List list : lists) {
+            for (Object o : container1) {
+                List list1 = new ArrayList();
+                list1.addAll(list);
+                list1.add(o);
+                r.add(list1);
+            }
+        }
+        return r;
+    }
+
+    /**
+     * 将[a,b,c]转换成
+     * [
+     * [a],[b],[c],[d]
+     * ]
+     * why?
+     * cos array便于做插入操作
+     */
+    private static List<List> transformation(List container) {
+        List<List> r = new ArrayList<>();
+        for (Object o : container) {
+            List list = new ArrayList();
+            list.add(o);
+            r.add(list);
+        }
+        return r;
+    }
+
 }

@@ -10,6 +10,7 @@ import com.httprunnerjava.model.lazyLoading.LazyString;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -17,7 +18,7 @@ import java.util.Optional;
 
 @Data
 @NoArgsConstructor
-public class TRequest {
+public class TRequest implements Serializable {
     private MethodEnum method;
     private LazyString url;
     private Params params;

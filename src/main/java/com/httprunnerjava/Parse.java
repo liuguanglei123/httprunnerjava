@@ -30,10 +30,11 @@ public class Parse {
             Matcher var_match = variable_regex_compile.matcher(content);
             if(var_match.find(match_start_position)) {
                 String var_name;
-                if(var_match.group(1) == null || var_match.group(1).equals(""))
+                if(var_match.group(1) == null || var_match.group(1).equals("")) {
                     var_name = var_match.group(2);
-                else
+                } else {
                     var_name = var_match.group(1);
+                }
 
                 result.add(var_name);
             }
@@ -49,6 +50,14 @@ public class Parse {
         }
 
         return result;
+    }
+
+    public static Boolean isValidFunc(String funcStr){
+        Matcher funcMatch = function_regex_compile.matcher(funcStr);
+        if(funcMatch.matches()){
+            return true;
+        }
+        return false;
     }
 
 }

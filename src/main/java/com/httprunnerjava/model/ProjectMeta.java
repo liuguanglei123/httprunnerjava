@@ -12,7 +12,7 @@ public class ProjectMeta {
 
     private String RootDir;
 
-    public static Class<?> functions;
+    private static Class<?> functions;
 
     public void setFunctions(Class<?> cls) {
         functions = cls;
@@ -22,7 +22,7 @@ public class ProjectMeta {
         return functions;
     }
 
-    public Map<String,Object> envVar = new HashMap<>();
+    private Map<String,Object> envVar = new HashMap<>();
 
     public ProjectMeta() {
         //TODO:默认加载debugtalk作为内部function对象

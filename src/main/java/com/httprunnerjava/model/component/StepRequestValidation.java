@@ -24,6 +24,11 @@ public class StepRequestValidation extends Step{
         return this;
     }
 
+    public StepRequestValidation jsonEqual(String jmesPath, Object expectedValue, String excludeItemStr){
+        getValidators().add(new Validator("jsonEquals",jmesPath, expectedValue, null, excludeItemStr));
+        return this;
+    }
+
     public StepRequestValidation listEmpty(String jmesPath){
         return listEmpty(jmesPath, null);
     }

@@ -16,7 +16,10 @@
 
 package com.httprunnerjava;
 
+import com.alibaba.fastjson.JSONArray;
+import com.alibaba.fastjson.JSONObject;
 import com.google.common.base.Strings;
+import com.httprunnerjava.annotation.Parameters;
 import com.httprunnerjava.exception.HrunBizException;
 import com.httprunnerjava.exception.HrunExceptionFactory;
 import com.httprunnerjava.exception.ValidationFailureException;
@@ -195,16 +198,132 @@ public class HttpRunner {
     }
 
     /**
-     * testng的参数构造器，暂时还不支持 parameterized方法
+     * testng的参数构造器，已经支持 parameterized方法
      * @return
      */
     @DataProvider(name = "HrunDataProvider")
     public Iterator<Object[]> createData() {
-        List<Object[]> steps = new ArrayList<>();
-        for (Step step : this.getTeststeps()) {
-            steps.add(new Step[]{step, null});
+        Parameters parameters = this.getClass().getAnnotation(Parameters.class);
+        if(parameters == null){
+            List<Object[]> steps = new ArrayList<>();
+            for (Step step : this.getTeststeps()) {
+                steps.add(new Object[]{step, null});
+            }
+            return steps.iterator();
         }
-        return steps.iterator();
+
+//        String file = parameters.file();
+//        if(Strings.isNullOrEmpty(parameters.file())){
+//            return null;
+//        }
+
+        String mapStr = parameters.mapStr();
+        Map<String,Object> mapTemp = new HashMap<>();
+        /**思路：
+         * 1.需要先将mapstring解析成Map<String,Object>，使用fastjson处理吧
+         *     循环处理每个Object对象，如果不是string，可以直接使用jsonarray进行解析
+         *     如果不是list，那就匹配${function()},然后执行方法，获取结果
+         *     如果匹配不到方法，那么直接作为object存储起来（这里可能是string，int long等多种类型）
+         */
+        if(!Strings.isNullOrEmpty(mapStr)){
+            //parameter参数为一个完整的方法${function()}
+            if(Parse.isValidFunc(mapStr)){
+                log.debug("call parameters function: {}", mapStr);
+                try{
+                    LazyString function = new LazyString(mapStr);
+                    function.parse(new Variables(projectMeta.getEnvVar()), projectMeta.getFunctions());
+                    Object functResult = function.getParsedValue();
+
+                    if(!(functResult instanceof Map)){
+                        HrunExceptionFactory.create("E00008");
+                    }
+
+                    mapTemp = (Map<String,Object>)functResult;
+                }catch(Exception e){
+                    log.error("参数化函数执行异常，执行的函数是：" + mapStr);
+                    throw e;
+                }
+            } else {
+                try{
+                    mapTemp = JSONObject.parseObject(mapStr,Map.class);
+                }catch (Exception e){
+                    log.error("mapStr解析为map错误，请检查");
+                    throw e;
+                }
+                for(Map.Entry<String,Object> entry : mapTemp.entrySet()){
+                    if(entry.getValue() instanceof List){
+                        continue;
+                    }else if(entry.getValue() instanceof String && Parse.isValidFunc(entry.getValue().toString())){
+                        try{
+                            LazyString function = new LazyString(entry.getValue().toString());
+                            function.parse(new Variables(projectMeta.getEnvVar()), projectMeta.getFunctions());
+                            Object functResult = function.getParsedValue();
+
+                            if(!(functResult instanceof List)){
+                                HrunExceptionFactory.create("E00009");
+                            }
+
+                            mapTemp = (Map<String,Object>)functResult;
+                        }catch(Exception e){
+                            log.error("参数化函数执行异常，执行的函数是：" + entry.getValue());
+                            throw e;
+                        }
+                    }
+                }
+            }
+            /*
+            执行到这里，map的形式为：
+            {
+                "param1":"5SFXXXXXXXX",
+                "param2":12345,
+                "param3":["foo1","foo2"]
+                "param4":["soo1","soo2"]
+            },最终返回的结果，要进行一些笛卡尔积的计算
+            [
+                {"param1":"5SFXXXXXXXX","param2":12345,"param3":"foo1","param4":"soo1"}
+                {"param1":"5SFXXXXXXXX","param2":12345,"param3":"foo1","param4":"soo2"}
+                {"param1":"5SFXXXXXXXX","param2":12345,"param3":"foo2","param4":"soo1"}
+                {"param1":"5SFXXXXXXXX","param2":12345,"param3":"foo2","param4":"soo2"}
+            ]
+             */
+            /*
+            首先将原始map转成如下形式
+            [
+                [{"param1":"5SFXXXXXXXX"}],
+                [{"param2":12345}],
+                [{"param3":"foo1"},{"param3":"foo2"}]
+                [{"param4":"soo1"},{"param4":"soo2"}]
+            ]
+             */
+            List<List<Map<String,Object>>> listTemp = new ArrayList<>();
+            for(Map.Entry<String,Object> entry : mapTemp.entrySet()){
+                if(entry.getValue() instanceof List){
+                    List<Map<String,Object>> listTempIn = new ArrayList<>();
+                    for(Object each : (List)entry.getValue()){
+                        Map<String,Object> mapTempIn = new HashMap<>();
+                        mapTempIn.put(entry.getKey(),each);
+                        listTempIn.add(mapTempIn);
+                    }
+                    listTemp.add(listTempIn);
+                }else{
+                    Map<String,Object> mapTempIn = new HashMap<>();
+                    mapTempIn.put(entry.getKey(),entry.getValue());
+                    listTemp.add(Collections.singletonList(mapTempIn));
+                }
+            }
+
+            List<Map<String,Object>> mapResult = CommonUtils.genCartesianProduct(listTemp);
+            List<Object[]> steps = new ArrayList<>();
+            for(Map<String,Object> each : mapResult){
+                for (Step step : this.getTeststeps()) {
+                    steps.add(new Object[]{step, each});
+                }
+            }
+
+            return steps.iterator();
+        }
+
+        return null;
     }
 
     @AfterClass

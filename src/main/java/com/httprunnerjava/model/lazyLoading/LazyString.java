@@ -125,10 +125,11 @@ public class LazyString extends LazyContent<String>{
             Matcher var_match = variable_regex_compile.matcher(remainParsedString);
             if(var_match.matches()){
                 String varName;
-                if(var_match.group(1) == null || var_match.group(1).equals(""))
+                if(var_match.group(1) == null || var_match.group(1).equals("")) {
                     varName = var_match.group(2);
-                else
+                } else {
                     varName = var_match.group(1);
+                }
 
                 Object varValue = getMappingVariable(varName, variablesMapping);
 

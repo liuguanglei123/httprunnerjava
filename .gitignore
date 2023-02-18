@@ -6,3 +6,4 @@ target/
 src/test/java/com/httprunnerjava/notaddgit
 src/test/java/com/httprunnerjava/kujiale
 /src/test/java/com/httprunnerjava/postman_echo/gitignore/
+/src/test/resources/gitignore/

@@ -1,18 +1,17 @@
 package com.httprunnerjava.postman_echo.functionalVerification;
 
 import com.httprunnerjava.HttpRunner;
+import com.httprunnerjava.annotation.Parameters;
 import com.httprunnerjava.model.Config;
 import com.httprunnerjava.model.Step;
 import com.httprunnerjava.model.component.RunRequest;
-import com.httprunnerjava.utils.JsonUtils;
 import lombok.Getter;
-import org.testng.annotations.Test;
 
 import java.util.ArrayList;
 import java.util.List;
 
 /**
- * @Author: Yeman
+ * @Author: ChuCan
  * @CreatedDate: 2022-04-21-16:21
  * @Description:
  */

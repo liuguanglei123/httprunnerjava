@@ -22,8 +22,9 @@ public class JsonUtils {
     }
 
     public static void compareJson(Object json1, Object json2) {
-        if((json1 == null && json2 == null) || (json1 != null && json1.equals(json2)))
+        if((json1 == null && json2 == null) || (json1 != null && json1.equals(json2))) {
             return;
+        }
 
         if(json1 instanceof String && json2 instanceof String){
             try{
@@ -35,21 +36,23 @@ public class JsonUtils {
         }
 
         if (json1 instanceof JSONObject){
-            if(json2 instanceof String)
+            if(json2 instanceof String) {
                 compareJson(
                         JSON.toJSONString((JSONObject) json1, SerializerFeature.WRITE_MAP_NULL_FEATURES),
-                        (String)json2
+                        (String) json2
                 );
-            else
-                compareJson((JSONObject)json1, (JSONObject)json2);
+            } else {
+                compareJson((JSONObject) json1, (JSONObject) json2);
+            }
         } else if(json1 instanceof JSONArray){
-            if(json2 instanceof String)
+            if(json2 instanceof String) {
                 compareJson(
                         JSON.toJSONString((JSONArray) json1, SerializerFeature.WRITE_MAP_NULL_FEATURES),
-                        (String)json2
+                        (String) json2
                 );
-            else
-                compareJson((JSONArray)json1, (JSONArray)json2);
+            } else {
+                compareJson((JSONArray) json1, (JSONArray) json2);
+            }
         } else {
             throw new CompareError("要比对的json不一致!");
         }
@@ -74,8 +77,9 @@ public class JsonUtils {
                 isSame = true;
                 break;
             }
-            if(!isSame)
+            if(!isSame) {
                 throw new CompareError("要比对的json不一致!");
+            }
         }
     }
 
@@ -102,8 +106,9 @@ public class JsonUtils {
                 isDifferent = true;
             }
         }
-        if(isDifferent)
+        if(isDifferent) {
             throw new CompareError("JSON比对结果不一致");
+        }
     }
 
     public static Object getByNumKey(JSON data, String key){

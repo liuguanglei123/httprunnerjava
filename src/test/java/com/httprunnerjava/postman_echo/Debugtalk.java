@@ -1,7 +1,6 @@
 package com.httprunnerjava.postman_echo;
 
-import java.util.Arrays;
-import java.util.List;
+import java.util.*;
 
 public class Debugtalk {
 
@@ -69,5 +68,27 @@ public class Debugtalk {
 
     public String getUserId(String uId){
         return uId;
+    }
+
+    public String toStr(Object obj){
+        return String.valueOf(obj);
+    }
+
+    public Map<String,Object> parameterUsers(String startNum, String num){
+        Integer startNums = Integer.valueOf(startNum);
+        Integer nums = Integer.valueOf(num);
+        Integer i=0;
+
+        Map<String,Object> result = new HashMap<>();
+        List<Integer> allUsers = new ArrayList<>();
+        while(i<=nums){
+            allUsers.add(startNums);
+            startNums++;
+            i++;
+        }
+
+        result.put("userId",allUsers);
+
+        return result;
     }
 }

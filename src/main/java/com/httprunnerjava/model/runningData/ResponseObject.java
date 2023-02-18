@@ -15,16 +15,17 @@ import okhttp3.Response;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.Serializable;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.*;
 
 @Data
 @Slf4j
-public class ResponseObject {
+public class ResponseObject implements Serializable {
 
     @Data
-    public class ValidatorDict {
+    public class ValidatorDict implements Serializable{
         //TODO：这里可以分析一下，checkValue和expectValue到底有哪些类型
         // string num(int float) boolean 还有其他的吗？
         private String comparator;

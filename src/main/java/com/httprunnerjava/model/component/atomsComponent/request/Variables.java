@@ -33,16 +33,17 @@ public class Variables implements Serializable {
 
     public Variables(Map<String,Object> raw_variables) {
         for (Map.Entry entry : raw_variables.entrySet()) {
-            if (entry.getValue() instanceof String)
+            if (entry.getValue() instanceof String) {
                 content.put(String.valueOf(entry.getKey()), new LazyString(String.valueOf(entry.getValue())));
-            else if(entry.getValue() instanceof LazyContent)
-                content.put(String.valueOf(entry.getKey()),(LazyContent)entry.getValue());
-            else if(entry.getValue() instanceof List)//可能list中的每个值都是laztString，所以要用loadObject进行识别判断
+            } else if(entry.getValue() instanceof LazyContent) {
+                content.put(String.valueOf(entry.getKey()), (LazyContent) entry.getValue());
+            } else if(entry.getValue() instanceof List) {//可能list中的每个值都是laztString，所以要用loadObject进行识别判断
                 content.put(String.valueOf(entry.getKey()), LazyContent.loadObject(entry.getValue()));
-            else if(entry.getValue() instanceof Map)//可能list中的每个值都是laztString，，所以要用loadObject进行识别判断
+            } else if(entry.getValue() instanceof Map) {//可能list中的每个值都是laztString，，所以要用loadObject进行识别判断
                 content.put(String.valueOf(entry.getKey()), LazyContent.loadObject(entry.getValue()));
-            else
+            } else {
                 content.put(String.valueOf(entry.getKey()), new LazyContent(entry.getValue()));
+            }
         }
     }
 
@@ -68,14 +69,15 @@ public class Variables implements Serializable {
     public Variables putIfAbsent(Map<String,Object> param){
         Optional.ofNullable(param).ifPresent( p -> {
                     param.entrySet().forEach(e -> {
-                        if (e.getValue() instanceof String)
+                        if (e.getValue() instanceof String) {
                             this.getContent().putIfAbsent(e.getKey(), new LazyString(String.valueOf(e.getValue())));
-                        else if (e.getValue() instanceof LazyContent)
+                        }else if (e.getValue() instanceof LazyContent) {
                             this.getContent().putIfAbsent(e.getKey(), (LazyContent) e.getValue());
-                        else if (e.getValue() instanceof LazyString)
+                        }else if (e.getValue() instanceof LazyString) {
                             this.getContent().putIfAbsent(e.getKey(), (LazyString) e.getValue());
-                        else
+                        }else {
                             this.getContent().putIfAbsent(e.getKey(), new LazyContent(e.getValue()));
+                        }
                     });
         });
         return this;
@@ -155,10 +157,11 @@ public class Variables implements Serializable {
     // 比如直接传入一个新的map
     public void put(Map<String,Object> raw_variables){
         for(Map.Entry<String,Object> entry : raw_variables.entrySet()){
-            if (entry.getValue() instanceof String)
+            if (entry.getValue() instanceof String) {
                 content.put(entry.getKey(), new LazyString(String.valueOf(entry.getValue())));
-            else
+            } else {
                 content.put(entry.getKey(), new LazyContent(entry.getValue()));
+            }
         }
     }
 
