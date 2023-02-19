@@ -16,8 +16,6 @@ import lombok.extern.slf4j.Slf4j;
 import okhttp3.*;
 import okio.Buffer;
 import org.jetbrains.annotations.NotNull;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.SSLSocketFactory;
@@ -26,8 +24,6 @@ import javax.net.ssl.X509TrustManager;
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.net.Proxy;
-import java.security.KeyManagementException;
-import java.security.NoSuchAlgorithmException;
 import java.security.cert.X509Certificate;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
@@ -196,6 +192,71 @@ public class HttpSession {
                     log.error(HrunBizException.toStackTrace(e));
                     HrunExceptionFactory.create("E20003");
                 }
+                break;
+            case PUT:
+                try {
+                    Request.Builder requestBuilder = new Request.Builder();
+                    addHeaders(tRequest.getHeaders(),requestBuilder);
+                    RequestBody requestBody = null;
+                    String contentType = Optional.ofNullable(tRequest.getHeaders().getContent().get("Content-Type")).
+                            orElse(new LazyString("")).getEvalValue().toString();
+                    if(contentType.contains("application/json")){
+                        MediaType mediaType = MediaType.parse("application/json; charset=utf-8");
+                        if(tRequest.getReqJson() != null){
+                            requestBody = RequestBody.create(tRequest.getReqJson().getEvalString(),mediaType);
+                        }else{
+                            requestBody = RequestBody.create("",mediaType);
+                        }
+                    }else if(contentType.contains("application/form-data")){
+
+                    }else if(contentType.contains("application/x-www-form-urlencoded")){
+                        MediaType mediaType = MediaType.parse("application/x-www-form-urlencoded; charset=utf-8");
+                        requestBody = RequestBody.create(tRequest.getData().getEvalString(),mediaType);
+                    }else{
+                        MediaType mediaType = MediaType.parse("text/plain; charset=utf-8");
+                        requestBody = RequestBody.create(tRequest.getData().getEvalString(),mediaType);
+                    }
+
+                    Request request = requestBuilder.url(parseUrl(url,tRequest.getParams())).put(requestBody).build();
+                    response = okHttpClient.newCall(request).execute();
+                }catch (Exception e){
+                    log.error("请求接口报错，请根据日志检查请求是否准确，报错原始信息如下");
+                    log.error(HrunBizException.toStackTrace(e));
+                    HrunExceptionFactory.create("E20003");
+                }
+                break;
+            case DELETE:
+                try {
+                    Request.Builder requestBuilder = new Request.Builder();
+                    addHeaders(tRequest.getHeaders(),requestBuilder);
+                    RequestBody requestBody = null;
+                    String contentType = Optional.ofNullable(tRequest.getHeaders().getContent().get("Content-Type")).
+                            orElse(new LazyString("")).getEvalValue().toString();
+                    if(contentType.contains("application/json")){
+                        MediaType mediaType = MediaType.parse("application/json; charset=utf-8");
+                        if(tRequest.getReqJson() != null){
+                            requestBody = RequestBody.create(tRequest.getReqJson().getEvalString(),mediaType);
+                        }else{
+                            requestBody = RequestBody.create("",mediaType);
+                        }
+                    }else if(contentType.contains("application/form-data")){
+
+                    }else if(contentType.contains("application/x-www-form-urlencoded")){
+                        MediaType mediaType = MediaType.parse("application/x-www-form-urlencoded; charset=utf-8");
+                        requestBody = RequestBody.create(tRequest.getData().getEvalString(),mediaType);
+                    }else{
+                        MediaType mediaType = MediaType.parse("text/plain; charset=utf-8");
+                        requestBody = RequestBody.create(tRequest.getData().getEvalString(),mediaType);
+                    }
+
+                    Request request = requestBuilder.url(parseUrl(url,tRequest.getParams())).delete(requestBody).build();
+                    response = okHttpClient.newCall(request).execute();
+                }catch (Exception e){
+                    log.error("请求接口报错，请根据日志检查请求是否准确，报错原始信息如下");
+                    log.error(HrunBizException.toStackTrace(e));
+                    HrunExceptionFactory.create("E20003");
+                }
+                break;
         }
 
         return response;

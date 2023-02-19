@@ -57,6 +57,16 @@ public class RunRequest extends Step {
         return new RequestWithOptionalArgs(this);
     }
 
+    public RequestWithOptionalArgs put(String url){
+        setRequest(new TRequest("PUT",url));
+        return new RequestWithOptionalArgs(this);
+    }
+
+    public RequestWithOptionalArgs delete(String url){
+        setRequest(new TRequest("DELETE",url));
+        return new RequestWithOptionalArgs(this);
+    }
+
     public RunRequest method(String method){
         if(supportMethod.contains(method.toUpperCase()))
             setMethod(method);

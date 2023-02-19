@@ -2,7 +2,8 @@
 
 ------
 
-HttpRunner是一款优秀的接口自动化测试框架，目前已经演变了三个大版本，HttpRunner目前是python语言开发（目前也有GoLang版本在不断迭代），JAVA下目前并没有类似的工具可用。HttpRunner For Java项目主要基于HttpRunner的3.x版本，实现了JAVA版本的HttpRunner，继承了原版几乎所有的优秀设计。
+[HttpRunner](https://github.com/httprunner/httprunner)
+是一款优秀的接口自动化测试框架，目前已经演变了三个大版本，其主要支持的语言是Go和Python，JAVA下目前并没有类似的工具可用。HttpRunner For Java项目主要基于HttpRunner的3.x版本，实现了JAVA版本的HttpRunner，并继承了原版的优秀设计。
 
 ## 核心特性
 > * 支持API接口的多种请求方法，包括 GET/POST/HEAD/PUT/DELETE 等（目前实现了前两种，其他正在开发中）
@@ -10,7 +11,7 @@ HttpRunner是一款优秀的接口自动化测试框架，目前已经演变了�
 > * 接口测试用例具有可复用性，便于创建复杂测试场景
 > * 测试结果统计报告采用Allure简洁清晰，附带详尽日志记录，包括接口请求耗时、请求响应数据等
 > * 具有可扩展性
-
+``
 ### 简单的case样例：
 #### 1.单一测试步骤
 ```
