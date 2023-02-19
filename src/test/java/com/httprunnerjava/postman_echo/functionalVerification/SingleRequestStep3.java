@@ -13,7 +13,7 @@ import java.util.List;
 public class SingleRequestStep3 extends HttpRunner {
 
     private Config config = new Config("简单验证不同的请求方式，包括get post delet put")
-            .withLocalDebug(true)
+            .withLocalDebug(false)
             .base_url("https://postman-echo.com")
             .verify(false)
             .export("['foo3']");

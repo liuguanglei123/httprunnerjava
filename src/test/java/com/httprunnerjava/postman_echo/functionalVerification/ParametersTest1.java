@@ -11,11 +11,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Getter
-@Parameters(mapStr = "{\n" +
-        "                \"param1\":\"5SFXXXXXXXX\",\n" +
-        "                \"param2\":12345,\n" +
-        "                \"param3\":[\"foo1\",\"foo2\"],\n" +
-        "                \"param4\":[\"soo1\",\"soo2\"]\n" +
+@Parameters(mapStr = "{" +
+        "                'param1':'5SFXXXXXXXX'," +
+        "                'param2':12345," +
+        "                'param3':['foo1','foo2']," +
+        "                'param4':['soo1','soo2']" +
         "            }")
 public class ParametersTest1 extends HttpRunner {
 
