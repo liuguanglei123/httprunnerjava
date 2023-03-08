@@ -459,7 +459,10 @@ public class HttpRunner {
      */
     public void parseConfig(Config config) {
         getConfig().updateVariables(sessionVariables);
-        getConfigVar().parse(projectMeta.getFunctions());
+        getConfig().setVariables(
+                getConfigVar().parse(projectMeta.getFunctions())
+        );
+//        getConfigVar().parse(projectMeta.getFunctions());
         getConfigName().parse(getConfigVar(), projectMeta.getFunctions());
         getConfigBaseUrl().parse(getConfigVar(), projectMeta.getFunctions());
     }
