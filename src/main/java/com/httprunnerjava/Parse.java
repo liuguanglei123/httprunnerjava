@@ -19,7 +19,7 @@ public class Parse {
             Pattern.CASE_INSENSITIVE | Pattern.DOTALL);
 
     // 自定义函数表达式的正则匹配 ${func1($var_1, $var_3)}
-    static public Pattern function_regex_compile = Pattern.compile("(\\$\\{(\\w+)\\(([$\\w.\\-/\\s=,]*)\\)}).*",
+    static public Pattern function_regex_compile = Pattern.compile("(\\$\\{(\\w+)\\(([$\\w.\\-/\\s=,:/]*)\\)}).*",
             Pattern.CASE_INSENSITIVE | Pattern.DOTALL);
 
     public static Set<String> regexFindallVariables(String content){

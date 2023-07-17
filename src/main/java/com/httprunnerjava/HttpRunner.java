@@ -16,7 +16,6 @@
 
 package com.httprunnerjava;
 
-import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.google.common.base.Strings;
 import com.httprunnerjava.annotation.Parameters;
@@ -212,10 +211,10 @@ public class HttpRunner {
             return steps.iterator();
         }
 
-//        String file = parameters.file();
-//        if(Strings.isNullOrEmpty(parameters.file())){
-//            return null;
-//        }
+        String file = parameters.csvFile();
+        if(Strings.isNullOrEmpty(parameters.csvFile())){
+            return null;
+        }
 
         String mapStr = parameters.mapStr();
         Map<String,Object> mapTemp = new HashMap<>();
