@@ -1,6 +1,8 @@
 package com.httprunnerjava.model.Enum;
 
-public enum HookType{
+import java.io.Serializable;
+
+public enum HookType implements Serializable  {
         StringHook(1),
         MapHook(2);
 

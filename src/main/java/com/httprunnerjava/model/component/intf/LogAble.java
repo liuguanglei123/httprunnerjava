@@ -1,4 +1,5 @@
 package com.httprunnerjava.model.component.intf;
 
-public interface PerformableIntf {
+public interface LogAble {
+    String logDetail();
 }

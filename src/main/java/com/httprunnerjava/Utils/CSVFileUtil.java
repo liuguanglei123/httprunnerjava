@@ -23,6 +23,12 @@ public class CSVFileUtil {
         return getLines(fileName, ENCODE);
     }
 
+    public static List<String> getLines(String fileName) {
+        File file = new File("classpath:fileName");
+        return getLines(file, ENCODE);
+    }
+
+
     public static List<String> getLines(InputStream inputStream, String encode){
         List<String> lines = new ArrayList<String>();
         BufferedReader br = null;
@@ -145,7 +151,7 @@ public class CSVFileUtil {
     /**
      * 将list的第一行作为Map的key，下面的列作为Map的value
      */
-    public static List<Map<String, String>> parseList(List<String> list) {
+    public static List<Map<String, String>> parseListoMap(List<String> list) {
         List<Map<String, String>> resultList = new ArrayList<>();
         String firstLine = list.get(0);
         String[] fields = firstLine.split(",");

@@ -147,4 +147,48 @@ public class Debugtalk {
 
         return result;
     }
+
+    public Map<String,Object> getAllOrgUserIdsMap() {
+        List<Long> allUserIds = getAllOrgUserIds("http://saas-business-account-prodtest.k8s-txyun-prod.qunhequnhe.com");
+        Map<String,Object> result = new HashMap<>();
+        result.put("userId", allUserIds);
+
+        return result;
+    }
+
+    public List<Long> getAllOrgUserIds(String saasBusinessAccountUrl){
+        List<Long> result = new ArrayList<>();
+        Long startAccountId = 0L;
+
+        int i = 0;
+        while(i<100){
+            try {
+                String resultStr = "";
+                OkHttpClient client = new OkHttpClient();
+                RequestBody body = RequestBody.create(String.format("{\"accountId\":%s,\"fields\":[\"accountId\",\"userId\"],\"num\":1000}",startAccountId), JSON_BODY_MEDIA);
+
+                Request request = new Request.Builder()
+                        .url(saasBusinessAccountUrl + "/saas/business-account/api/tob-business-account-service/get-all-inservice-root-account-info")
+                        .post(body)
+                        .build();
+
+                Response response = client.newCall(request).execute();
+                resultStr = response.body().string();
+                List<TobBusinessAccount> accountInfoList = JSONArray.parseArray(resultStr, TobBusinessAccount.class);
+                if(CollectionUtils.isEmpty(accountInfoList)){
+                    break;
+                }
+                List<Long> userIdList= accountInfoList.stream().map(TobBusinessAccount::getUserId).collect(Collectors.toList());
+                List<Long> accountIdList= accountInfoList.stream().map(TobBusinessAccount::getAccountId).collect(Collectors.toList());
+                startAccountId = Collections.max(accountIdList);
+                result.addAll(userIdList);
+            }catch (Exception e){
+                System.out.println("error");
+            }
+
+            i++;
+        }
+
+        return result;
+    }
 }

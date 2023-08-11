@@ -20,13 +20,9 @@ public class ExceptionDefinitions {
     /**
      * Creates a new instance of ExceptionDefinitions. Description
      */
-
     private ExceptionDefinitions() {
     }
 
-//    public void setLocation(Resource location) {
-//        this.location = location;
-//    }
 
     private Properties getDefinitions() throws IOException {
         if (this.exceptionDefinitionProps == null) {
@@ -36,7 +32,6 @@ public class ExceptionDefinitions {
         }
         return this.exceptionDefinitionProps;
     }
-
 
 
     public String getExceptionMessage(String errorCode) {

@@ -74,15 +74,13 @@ public class Loader {
         return CompilerFile.loadLoadFileClass();
     }
 
-    public static List<Map<String,String>> load_csv_file(String csv_file){
-        Path path = Paths.get(csv_file);
-        //TODO:暂时只支持加载resource目录下的文件
-        Loader loader = new Loader();
-        InputStream inputStream = loader.getClass().getClassLoader().getResourceAsStream(csv_file);
+    public static List<Map<String,String>> loadCsvFile(String csvFile){
+        String newCsvFilePath =  csvFile.replace("/","\\");
+        //只支持加载resource目录下的文件
+        InputStream inputStream = Loader.class.getClassLoader().getResourceAsStream(newCsvFilePath);
 
         List<String> lines = CSVFileUtil.getLines(inputStream, "UTF-8");
-        List<Map<String, String>> mapList = CSVFileUtil.parseList(lines);
-        System.out.println(Arrays.toString(mapList.toArray()));
+        List<Map<String, String>> mapList = CSVFileUtil.parseListoMap(lines);
         return mapList;
     }
 

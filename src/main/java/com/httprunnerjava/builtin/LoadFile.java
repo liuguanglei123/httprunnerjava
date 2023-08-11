@@ -10,8 +10,13 @@ import java.util.Objects;
 
 public class LoadFile {
 
+    /**
+     * 加载
+     * @param filePath 文件在resources目录下的相对路径
+     * @return
+     * @throws IOException
+     */
     public static String loadResourcesFileAsString(String filePath) throws IOException {
-
         StringBuffer fileData = new StringBuffer("");
         BufferedReader reader = new BufferedReader(
                 new InputStreamReader(

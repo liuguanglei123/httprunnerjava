@@ -8,15 +8,15 @@ import com.httprunnerjava.model.component.atomsComponent.request.Variables;
 import com.httprunnerjava.model.component.atomsComponent.response.Export;
 import com.httprunnerjava.model.component.atomsComponent.response.Validator;
 import com.httprunnerjava.model.component.intf.CallAble;
-import com.httprunnerjava.model.component.moleculesComponent.Response;
 import com.httprunnerjava.model.component.moleculesComponent.TRequest;
 import com.httprunnerjava.model.lazyLoading.LazyString;
 import lombok.Data;
 
+import java.io.Serializable;
 import java.util.*;
 
 @Data
-public class Step {
+public class Step implements Serializable {
 
     final public static List<String> supportMethod = Arrays.asList("GET","POST");
 

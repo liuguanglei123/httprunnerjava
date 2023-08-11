@@ -7,13 +7,12 @@ import com.httprunnerjava.builtin.Comparator;
 import com.httprunnerjava.exception.*;
 import com.httprunnerjava.model.component.atomsComponent.request.Variables;
 import com.httprunnerjava.model.component.atomsComponent.response.Validator;
+import com.httprunnerjava.model.component.intf.LogAble;
 import com.httprunnerjava.model.lazyLoading.LazyString;
 import com.httprunnerjava.utils.JsonUtils;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 import okhttp3.Response;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.io.Serializable;
 import java.lang.reflect.InvocationTargetException;
@@ -22,7 +21,7 @@ import java.util.*;
 
 @Data
 @Slf4j
-public class ResponseObject implements Serializable {
+public class ResponseObject implements Serializable, LogAble {
 
     @Data
     public class ValidatorDict implements Serializable{
@@ -145,7 +144,7 @@ public class ResponseObject implements Serializable {
                 validatePass = false;
                 if (e instanceof InvocationTargetException) {
                     Throwable targetEx =((InvocationTargetException)e).getTargetException();
-                    if(targetEx instanceof CompareError){
+                    if(targetEx instanceof AssertionError){
                         validate_msg += "\t==> fail \n";
                         validate_msg += String.format("check_item : %s \n",check_item);
                         validate_msg += String.format("checkValue : %s \n",check_item_valued);
@@ -195,7 +194,12 @@ public class ResponseObject implements Serializable {
                     return JsonUtils.getByNumKey(data,strArray[0]);
                 }
                 else {
-                    return ((JSONObject)data).get(strArray[0]);
+                    Object obj = ((JSONObject)data).get(strArray[0]);
+                    if(obj instanceof JSONObject){
+                        return ((JSONObject) obj).toJSONString();
+                    }else{
+                        return obj;
+                    }
                 }
             }else{
                 if(strArray[0].matches("\\d+")) {
@@ -247,8 +251,5 @@ public class ResponseObject implements Serializable {
                 "req_json: " + Optional.ofNullable(body).map(Object::toString).orElse("NULL") + "\n";
 
     }
-
-
-
 
 }

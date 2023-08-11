@@ -4,11 +4,12 @@ import com.alibaba.fastjson.JSONArray;
 import com.httprunnerjava.exception.HrunExceptionFactory;
 import lombok.Data;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
 @Data
-public class Validator {
+public class Validator implements Serializable {
     private String checkItem;
     private Object expectValue;
     private String message;

@@ -2,6 +2,7 @@ package com.httprunnerjava.model.lazyLoading;
 
 import com.httprunnerjava.Parse;
 import com.httprunnerjava.model.component.atomsComponent.request.Variables;
+import com.httprunnerjava.model.component.intf.ParseAble;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 
@@ -10,7 +11,7 @@ import java.util.*;
 
 @Data
 @Slf4j
-public class LazyContent<T> implements Serializable {
+public class LazyContent<T> implements Serializable, ParseAble {
 
     // 懒加载内容的原值
     public T rawValue;

@@ -5,6 +5,8 @@ import com.httprunnerjava.model.component.atomsComponent.request.Headers;
 import com.httprunnerjava.model.component.atomsComponent.request.Params;
 import com.httprunnerjava.model.component.atomsComponent.request.ReqJson;
 import com.httprunnerjava.model.component.atomsComponent.request.Variables;
+import com.httprunnerjava.model.component.intf.LogAble;
+import com.httprunnerjava.model.component.intf.ParseAble;
 import com.httprunnerjava.model.lazyLoading.LazyContent;
 import com.httprunnerjava.model.lazyLoading.LazyString;
 import lombok.Data;
@@ -18,7 +20,7 @@ import java.util.Optional;
 
 @Data
 @NoArgsConstructor
-public class TRequest implements Serializable {
+public class TRequest implements Serializable, ParseAble, LogAble {
     private MethodEnum method;
     private LazyString url;
     private Params params;
@@ -48,20 +50,24 @@ public class TRequest implements Serializable {
     }
 
     public TRequest parse(Variables variablesMapping, Class functionsMapping) {
-        Optional.ofNullable(headers).ifPresent(h -> h.parse(variablesMapping, functionsMapping));
-        Optional.ofNullable(params).ifPresent(p -> p.parse(variablesMapping, functionsMapping));
-        Optional.ofNullable(reqJson).ifPresent(r -> r.parse(variablesMapping, functionsMapping));
-        Optional.ofNullable(data).ifPresent(d -> d.parse(variablesMapping, functionsMapping));
-        Optional.ofNullable(url).ifPresent(u -> u.parse(variablesMapping, functionsMapping));
+        List<ParseAble> parseAbles = new ArrayList<>(Arrays.asList(headers,params,reqJson,data,url));
+        parseAbles.stream().forEach( each ->{
+            Optional.ofNullable(each).ifPresent( e -> e.parse(variablesMapping, functionsMapping));
+        });
         return this;
     }
 
     public String logDetail() {
-        return "\n" + "headers: " + Optional.ofNullable(headers).map(Headers::toString).orElse("NULL") + "\n" +
-                "params: " + Optional.ofNullable(params).map(Params::toString).orElse("NULL") + "\n" +
-                "reqJson: " + Optional.ofNullable(reqJson).map(ReqJson::toString).orElse("NULL") + "\n" +
-                "data: " + Optional.ofNullable(data).map(LazyContent::toString).orElse("NULL") + "\n" +
-                "timeout: " + Optional.ofNullable(timeout).map(Object::toString).orElse("NULL") + "\n" +
-                "url: " + Optional.ofNullable(url).map(Object::toString).orElse("NULL") + "\n";
+        StringBuffer result = new StringBuffer("\n");
+
+        List<Object> logObjects = new ArrayList<>(
+                Arrays.asList(method,url,params,headers,reqJson,data,timeout,allowRedirects,verify,upload)
+        );
+        logObjects.stream().forEach( each ->{
+            result.append(Optional.ofNullable(each).map( e -> e.toString()).orElse("NULL"));
+            result.append("\n");
+        });
+
+        return result.toString();
     }
 }

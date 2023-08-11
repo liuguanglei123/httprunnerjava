@@ -4,12 +4,13 @@ import com.alibaba.fastjson.JSONArray;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
 @Data
 @NoArgsConstructor
-public class Export {
+public class Export implements Serializable  {
 
     private List<String> content = new ArrayList<>();
 

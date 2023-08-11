@@ -212,12 +212,22 @@ public class HttpRunner {
         }
 
         String file = parameters.csvFile();
-        if(Strings.isNullOrEmpty(parameters.csvFile())){
-            return null;
+        if(!Strings.isNullOrEmpty(parameters.csvFile())){
+            List<Map<String, String>> maps = Loader.loadCsvFile(file);
+
+            List<Object[]> steps = new ArrayList<>();
+            for(Map<String,String> each : maps){
+                for (Step step : this.getTeststeps()) {
+                    Step newStep = CommonUtils.clone(step);
+                    steps.add(new Object[]{newStep, each});
+                }
+            }
+
+            return steps.iterator();
         }
 
         String mapStr = parameters.mapStr();
-        Map<String,Object> mapTemp = new HashMap<>();
+        Map<String,Object> mapTemp;
         /**思路：
          * 1.需要先将mapstring解析成Map<String,Object>，使用fastjson处理吧
          *     循环处理每个Object对象，如果不是string，可以直接使用jsonarray进行解析
@@ -315,7 +325,8 @@ public class HttpRunner {
             List<Object[]> steps = new ArrayList<>();
             for(Map<String,Object> each : mapResult){
                 for (Step step : this.getTeststeps()) {
-                    steps.add(new Object[]{step, each});
+                    Step newStep = (Step)(CommonUtils.clone(step));
+                    steps.add(new Object[]{newStep, each});
                 }
             }
 
@@ -353,8 +364,8 @@ public class HttpRunner {
             log.debug(step.toString());
             HrunExceptionFactory.create("E00004");
         }
-
-        stepDatas.add(stepData);
+// TODO:内存泄露，如何修改？
+//        stepDatas.add(stepData);
         log.info("run step end: {} <<<<<<\n", step.getName());
         return stepData.getExportVars();
     }

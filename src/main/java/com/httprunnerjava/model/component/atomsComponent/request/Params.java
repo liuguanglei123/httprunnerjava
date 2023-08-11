@@ -1,5 +1,6 @@
 package com.httprunnerjava.model.component.atomsComponent.request;
 
+import com.httprunnerjava.model.component.intf.ParseAble;
 import com.httprunnerjava.model.lazyLoading.LazyContent;
 import com.httprunnerjava.model.lazyLoading.LazyString;
 import com.httprunnerjava.utils.CommonUtils;
@@ -10,7 +11,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 @Data
-public class Params implements Serializable {
+public class Params implements Serializable, ParseAble {
 
     private HashMap<String, LazyContent<?>> content = new HashMap<>();
 

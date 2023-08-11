@@ -9,6 +9,7 @@ import com.httprunnerjava.model.lazyLoading.LazyString;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -19,7 +20,7 @@ import static com.httprunnerjava.Parse.function_regex_compile;
 
 @Slf4j
 @Data
-public class Hooks {
+public class Hooks implements Serializable {
 
     private List<HookString> content = new ArrayList<>();
 
@@ -61,7 +62,7 @@ public class Hooks {
     }
 
     @Data
-    public class HookString{
+    public class HookString implements Serializable {
         private HookType type;
         private LazyString funcHook;
         private Map<LazyString, LazyString> mapHook;

@@ -6,15 +6,17 @@ import com.alibaba.fastjson.JSONException;
 import com.alibaba.fastjson.JSONObject;
 import com.alibaba.fastjson.serializer.SerializerFeature;
 import com.httprunnerjava.exception.HrunExceptionFactory;
+import com.httprunnerjava.model.component.intf.ParseAble;
 import com.httprunnerjava.model.lazyLoading.LazyString;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 
+import java.io.Serializable;
 import java.util.Objects;
 
 @Data
 @Slf4j
-public class ReqJson {
+public class ReqJson implements Serializable, ParseAble {
 
     private static Integer MAP_OBJ_TYPE = 1;
 
@@ -119,7 +121,7 @@ public class ReqJson {
         else if(Objects.equals(type, LIST_OBJ_TYPE))
             return JSON.toJSONString(this.listObj,SerializerFeature.WriteNullStringAsEmpty);
         else
-            return JSON.toJSONString(this.mapObj,SerializerFeature.WriteNullStringAsEmpty);
+            return JSON.toJSONString(this.mapObj,SerializerFeature.WriteMapNullValue);
     }
 
 
