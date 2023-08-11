@@ -106,7 +106,7 @@ public class Debugtalk {
     }
 
     public Map<String,Object> getAllOrgAccountIdsMap() {
-        List<Long> allAccountIds = getAllOrgAccountIds("http://saas-business-account-prodtest.k8s-txyun-prod.qunhequnhe.com");
+        List<Long> allAccountIds = getAllOrgAccountIds("http://xxxx.k8s-txyun-prod.xxxx.com");
         Map<String,Object> result = new HashMap<>();
         result.put("orgId", allAccountIds);
 
@@ -125,7 +125,7 @@ public class Debugtalk {
                 RequestBody body = RequestBody.create(String.format("{\"accountId\":%s,\"fields\":[\"accountId\"],\"num\":2000}",startAccountId), JSON_BODY_MEDIA);
 
                 Request request = new Request.Builder()
-                        .url(saasBusinessAccountUrl + "/saas/business-account/api/tob-business-account-service/get-all-inservice-root-account-info")
+                        .url(saasBusinessAccountUrl + "/xxxx/xxxx-account/api/tob-xxxx-account-service/xxxx")
                         .post(body)
                         .build();
 
@@ -149,7 +149,7 @@ public class Debugtalk {
     }
 
     public Map<String,Object> getAllOrgUserIdsMap() {
-        List<Long> allUserIds = getAllOrgUserIds("http://saas-business-account-prodtest.k8s-txyun-prod.qunhequnhe.com");
+        List<Long> allUserIds = getAllOrgUserIds("http://xxxx.k8s-txyun-prod.xxxx.com");
         Map<String,Object> result = new HashMap<>();
         result.put("userId", allUserIds);
 
@@ -168,7 +168,7 @@ public class Debugtalk {
                 RequestBody body = RequestBody.create(String.format("{\"accountId\":%s,\"fields\":[\"accountId\",\"userId\"],\"num\":1000}",startAccountId), JSON_BODY_MEDIA);
 
                 Request request = new Request.Builder()
-                        .url(saasBusinessAccountUrl + "/saas/business-account/api/tob-business-account-service/get-all-inservice-root-account-info")
+                        .url(saasBusinessAccountUrl + "/xxxx/business-account/api/tob-xxxx-account-service/xxxx")
                         .post(body)
                         .build();
 
