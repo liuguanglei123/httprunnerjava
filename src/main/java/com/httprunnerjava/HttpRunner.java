@@ -365,7 +365,7 @@ public class HttpRunner {
             HrunExceptionFactory.create("E00004");
         }
 // TODO:内存泄露，如何修改？
-//        stepDatas.add(stepData);
+        stepDatas.add(stepData);
         log.info("run step end: {} <<<<<<\n", step.getName());
         return stepData.getExportVars();
     }

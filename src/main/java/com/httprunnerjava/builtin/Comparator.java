@@ -76,6 +76,17 @@ public class Comparator<T> {
         }
     }
 
+    public void listNotContains(T checkalue, Object expectValue) {
+        if (checkalue instanceof JSONArray) {
+            if (expectValue instanceof String) {
+                JSONArray expectValueArray = JSON.parseArray(expectValue.toString());
+                JsonUtils.containJsonArray((JSONArray) checkalue, expectValueArray, null);
+            }
+        } else {
+            throw new AssertionError("比对结果与预期不一致");
+        }
+    }
+
     public void listSize(T checkalue, Object expectValue) {
         if (checkalue instanceof JSONArray) {
             if (!expectValue.equals(((JSONArray) checkalue).size())){

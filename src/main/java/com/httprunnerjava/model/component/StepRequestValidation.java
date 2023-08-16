@@ -87,6 +87,15 @@ public class StepRequestValidation extends Step{
         return this;
     }
 
+    public StepRequestValidation listNotContains(String jmesPath, Object expectedValue){
+        return listContains(jmesPath,expectedValue, null);
+    }
+
+    public StepRequestValidation listNotContains(String jmesPath, Object expectedValue, String message) {
+        getValidators().add(new Validator("listNotContains",jmesPath,expectedValue,message));
+        return this;
+    }
+
     public StepRequestValidation listSize(String jmesPath, Object expectedValue) {
         getValidators().add(new Validator("listSize",jmesPath,expectedValue, null));
         return this;
