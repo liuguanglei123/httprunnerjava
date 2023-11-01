@@ -29,7 +29,6 @@ public class TRequest implements Serializable, ParseAble, LogAble {
     private LazyString data;
     //TODO:
     // private Cookies cookies;
-    private Float timeout;
     private boolean allowRedirects;
     private boolean verify;
     private Object upload; //TODO：上传文件
@@ -61,7 +60,7 @@ public class TRequest implements Serializable, ParseAble, LogAble {
         StringBuffer result = new StringBuffer("\n");
 
         List<Object> logObjects = new ArrayList<>(
-                Arrays.asList(method,url,params,headers,reqJson,data,timeout,allowRedirects,verify,upload)
+                Arrays.asList(method,url,params,headers,reqJson,data,allowRedirects,verify,upload)
         );
         logObjects.stream().forEach( each ->{
             result.append(Optional.ofNullable(each).map( e -> e.toString()).orElse("NULL"));

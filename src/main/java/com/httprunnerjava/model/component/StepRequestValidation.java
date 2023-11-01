@@ -88,7 +88,7 @@ public class StepRequestValidation extends Step{
     }
 
     public StepRequestValidation listNotContains(String jmesPath, Object expectedValue){
-        return listContains(jmesPath,expectedValue, null);
+        return listNotContains(jmesPath,expectedValue, null);
     }
 
     public StepRequestValidation listNotContains(String jmesPath, Object expectedValue, String message) {

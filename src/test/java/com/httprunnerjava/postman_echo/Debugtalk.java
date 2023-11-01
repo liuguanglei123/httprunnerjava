@@ -1,9 +1,13 @@
 package com.httprunnerjava.postman_echo;
 
+import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
+import com.httprunnerjava.Loader;
 import com.httprunnerjava.postman_echo.gitignore.po.TobBusinessAccount;
+import com.httprunnerjava.utils.CSVFileUtil;
 import okhttp3.*;
 
+import java.io.InputStream;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -190,5 +194,27 @@ public class Debugtalk {
         }
 
         return result;
+    }
+
+    public static String getRandomStrings(String csvFile, String count) {
+        String newCsvFilePath =  csvFile.replace("/","\\");
+        //只支持加载resource目录下的文件
+        InputStream inputStream = Loader.class.getClassLoader().getResourceAsStream(newCsvFilePath);
+
+        List<String> allLines = CSVFileUtil.getLines(inputStream, "UTF-8");
+
+        List<String> randomStrings = new ArrayList<>();
+        int size = allLines.size();
+        Random random = new Random();
+
+        Integer countNumber= Integer.valueOf(count);
+
+        for (int i = 0; i < countNumber; i++) {
+            int randomIndex = random.nextInt(size);
+            String randomString = allLines.get(randomIndex);
+            randomStrings.add(randomString);
+        }
+
+        return JSON.toJSONString(randomStrings);
     }
 }

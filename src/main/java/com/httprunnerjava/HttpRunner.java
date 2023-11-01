@@ -165,7 +165,7 @@ public class HttpRunner {
      * @param step 实际执行过程中的步骤
      * @param params 适用于手动执行某个测试集合（或某个步骤）的场景，用于往里传参，对于用例的扑通执行场景暂无意义
      */
-    @Test(dataProvider = "HrunDataProvider")
+    @Test(dataProvider = "HrunDataProvider",retryAnalyzer = RetryAnalyzer.class)
     public void testStart(Step step, Map<String, Object> params) {
         Variables configVariables = getConfigVar();
         if (params != null && !params.isEmpty()) {

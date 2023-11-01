@@ -100,6 +100,7 @@ public class Step implements Serializable {
                 .append("httpType=" + Optional.ofNullable(httpType).get() + ",")
                 .append("apiPath=" + Optional.ofNullable(apiPath).get() + ",")
                 .append("name=" + Optional.ofNullable(name).orElse("") + ",")
+                .append("caseDesc=" + Optional.ofNullable(name).orElse("") + ",")
                 .append("request=" + Optional.ofNullable(request).orElse(new TRequest()).toString() + ",")
                 .append("variables=" + Optional.ofNullable(variables).orElse(new Variables()).toString() + ",")
                 .append("setupHooks=" + Optional.ofNullable(setupHooks).orElse(new Hooks()).toString() + ",")

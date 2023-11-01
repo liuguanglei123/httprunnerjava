@@ -125,14 +125,27 @@ public class JsonUtils {
 //    }
 
     public static void containJsonArray(JSONArray check_value, JSONArray expect_value, String key){
-        boolean isDifferent = false;
+        boolean notContain = false;
         for (Object o1 : expect_value) {
             if (!check_value.contains(o1)) {
                 log.error("不一致：key  " + o1 + " 接口返回的check_value并不包含该key");
-                isDifferent = true;
+                notContain = true;
             }
         }
-        if(isDifferent) {
+        if(notContain) {
+            throw new AssertionError("JSON比对结果不一致");
+        }
+    }
+
+    public static void notContainJsonArray(JSONArray check_value, JSONArray expect_value, String key){
+        boolean isContain = false;
+        for (Object o1 : expect_value) {
+            if (check_value.contains(o1)) {
+                log.error("不一致：key  " + o1 + " 接口返回的check_value并不包含该key");
+                isContain = true;
+            }
+        }
+        if(isContain) {
             throw new AssertionError("JSON比对结果不一致");
         }
     }

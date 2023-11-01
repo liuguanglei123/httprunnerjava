@@ -10,6 +10,7 @@ import com.httprunnerjava.model.component.intf.ParseAble;
 import com.httprunnerjava.model.lazyLoading.LazyString;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
+import org.testng.util.Strings;
 
 import java.io.Serializable;
 import java.util.Objects;
@@ -123,6 +124,12 @@ public class ReqJson implements Serializable, ParseAble {
         else
             return JSON.toJSONString(this.mapObj,SerializerFeature.WriteMapNullValue);
     }
+
+    public static Boolean isNull(ReqJson reqJson){
+        return reqJson == null ||
+               ( reqJson.getStrObj() == null && reqJson.getMapObj() == null && reqJson.getListObj() == null);
+    }
+
 
 
 }

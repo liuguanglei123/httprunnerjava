@@ -1,5 +1,6 @@
 package com.httprunnerjava.model;
 
+import com.httprunnerjava.model.Enum.RetryTypeEnum;
 import com.httprunnerjava.model.component.atomsComponent.response.Export;
 import com.httprunnerjava.model.component.atomsComponent.request.Variables;
 import com.httprunnerjava.model.lazyLoading.*;
@@ -40,9 +41,10 @@ public class Config {
     // 单个用例执行出错后是否继续执行
     private Boolean resumeAfterException = false;
 
-    // TODO：
-    //  超时时间，待实现
-    private Integer timeOut;
+    // 毫秒数
+    private Long timeOut;
+
+    private RetryTypeEnum retryType;
 
     public Config(String name) {
         this.name = new LazyString(name);
@@ -51,7 +53,8 @@ public class Config {
         this.verify = false;
         this.export = new Export();
         this.weight = 1;
-        this.timeOut = 20;
+        this.timeOut = 5000L;
+        this.retryType = RetryTypeEnum.SINGLESTEP;
     }
 
     public Config variables(String variablesStr){
@@ -84,12 +87,19 @@ public class Config {
         return this;
     }
 
+    public Config withRetryType(RetryTypeEnum retryType){
+        this.retryType = retryType;
+        log.debug("当前重试模式为：" + retryType.getRetryDescription());
+
+        return this;
+    }
+
     public Config withCatchAllExpection(Boolean resumeAfterException){
         this.resumeAfterException = resumeAfterException;
         return this;
     }
 
-    public Config withTimeOut(Integer timeOut){
+    public Config withTimeOut(Long timeOut){
         this.timeOut = timeOut;
         return this;
     }

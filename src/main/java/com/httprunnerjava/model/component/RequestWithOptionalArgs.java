@@ -19,11 +19,6 @@ public class RequestWithOptionalArgs extends Step{
         return this;
     }
 
-    public RequestWithOptionalArgs setTimeout(float timeout){
-        getRequest().setTimeout(timeout);
-        return this;
-    }
-
     public RequestWithOptionalArgs setVerify(boolean verify){
         getRequest().setVerify(verify);
         return this;

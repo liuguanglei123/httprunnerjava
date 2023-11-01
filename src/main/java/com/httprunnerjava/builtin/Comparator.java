@@ -80,7 +80,7 @@ public class Comparator<T> {
         if (checkalue instanceof JSONArray) {
             if (expectValue instanceof String) {
                 JSONArray expectValueArray = JSON.parseArray(expectValue.toString());
-                JsonUtils.containJsonArray((JSONArray) checkalue, expectValueArray, null);
+                JsonUtils.notContainJsonArray((JSONArray) checkalue, expectValueArray, null);
             }
         } else {
             throw new AssertionError("比对结果与预期不一致");

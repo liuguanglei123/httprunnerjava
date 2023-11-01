@@ -90,13 +90,13 @@ public class HttpSession {
             if(httpRunner.getConfig().getIsProxy().equals(true))
                 okHttpClientBuilder.proxy(new Proxy(Proxy.Type.HTTP, new InetSocketAddress("127.0.0.1", 8888)));
 
-            Integer timeOut = httpRunner.getConfig().getTimeOut();
+            Long timeOut = httpRunner.getConfig().getTimeOut();
             okHttpClient = okHttpClientBuilder
                     //设置读取超时时间
-                    .readTimeout(timeOut, TimeUnit.SECONDS)
+                    .readTimeout(timeOut, TimeUnit.MILLISECONDS)
                     //设置写的超时时间
-                    .writeTimeout(timeOut, TimeUnit.SECONDS)
-                    .connectTimeout(timeOut, TimeUnit.SECONDS)
+                    .writeTimeout(timeOut, TimeUnit.MILLISECONDS)
+                    .connectTimeout(timeOut, TimeUnit.MILLISECONDS)
                     .sslSocketFactory(sslSocketFactory, getTrustManager())
                     .addNetworkInterceptor(getInterceptor())
                     .cookieJar(getCookieJar())
@@ -153,7 +153,8 @@ public class HttpSession {
                     Request.Builder requestBuilder = new Request.Builder();
                     addHeaders(tRequest.getHeaders(),requestBuilder);
 
-                    Request request = requestBuilder.url(parseUrl(url,tRequest.getParams())).get().build();
+                    Request request = requestBuilder.url(parseUrl(url,tRequest.getParams())).get()
+                            .build();
                     response = okHttpClient.newCall(request).execute();
                 }catch (IOException e){
                     log.error("请求接口报错，请根据日志检查请求是否准确，报错原始信息如下");

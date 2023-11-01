@@ -84,6 +84,16 @@ public class Loader {
         return mapList;
     }
 
+    //适用于加载一列数据，并封装为List的场景
+    public static List<String> loadCsvFileToList(String csvFile){
+        String newCsvFilePath =  csvFile.replace("/","\\");
+        //只支持加载resource目录下的文件
+        InputStream inputStream = Loader.class.getClassLoader().getResourceAsStream(newCsvFilePath);
+
+        List<String> lines = CSVFileUtil.getLines(inputStream, "UTF-8");
+        return lines;
+    }
+
     public static Map<String,Object> loadEnvFile(){
         HashMap<String,Object> result; ;
         Yaml yaml = new Yaml();
