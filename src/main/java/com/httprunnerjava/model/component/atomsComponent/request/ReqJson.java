@@ -110,7 +110,8 @@ public class ReqJson implements Serializable, ParseAble {
             }catch (Exception e2){
                 log.error("解析json出现问题，该字符串无法解析成JSONObject或者JSONArray，" +
                         "该报错可能是因为json串中引号使用不当造成的");
-                log.error("待解析的字符串是：" + strObj.getRawValue());
+                log.error("待解析的源字符串是：" + strObj.getRawValue());
+                log.error("待解析的目标字符串是：" + parsedStringObj);
                 HrunExceptionFactory.create("E00003");
             }
         }

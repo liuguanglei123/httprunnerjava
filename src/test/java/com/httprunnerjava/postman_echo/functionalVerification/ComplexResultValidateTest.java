@@ -14,6 +14,7 @@ public class ComplexResultValidateTest extends HttpRunner {
     private Config config = new Config("ComplexResultValidateTest")
             .variables("{'foo1':'config_bar1','foo2':'config_bar2','expect_foo1':'config_bar1','expect_foo2': 'config_bar2'}")
             .base_url("http://postman-echo.com")
+//            .withLocalDebug(true)
             .verify(false)
             .export("['foo3']");
 
@@ -55,6 +56,18 @@ public class ComplexResultValidateTest extends HttpRunner {
                 .validate()
                 .assertEqual("status_code", 200)
                 .jsonEqual("body.data", "{}")
+        );
+
+        add(new RunRequest("get with json body")
+                .withVariables("{'foo1': 'bar12', 'foo3': 'bar32'}")
+                .get("/get")
+                .withHeaders(
+                        "{'Content-Type': 'application/json'}"
+                )
+                .withJson("{accountIds:[],userIds:null,customerIds:[{geren:null},{shangjia:null}]}")
+                .validate()
+                .assertEqual("status_code", 500)
+                .jsonEqual("body.json", "{\"accountIds\":[],\"customerIds\":[{},{}]}")
         );
     }};
 

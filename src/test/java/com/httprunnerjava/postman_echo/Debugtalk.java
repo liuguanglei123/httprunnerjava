@@ -7,7 +7,7 @@ import com.httprunnerjava.postman_echo.gitignore.po.TobBusinessAccount;
 import com.httprunnerjava.utils.CSVFileUtil;
 import okhttp3.*;
 
-import java.io.InputStream;
+import java.io.*;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -217,4 +217,57 @@ public class Debugtalk {
 
         return JSON.toJSONString(randomStrings);
     }
+
+
+    /**
+     * 把一个文本文件转为csv文件，文件的来源为cap-plan录制的流量，格式比较固定
+     * @param inputFilePath
+     * @param outputFilePath
+     */
+    public static void convertTextToCsv(String inputFilePath, String inputFilePath2, String outputFilePath) {
+        try (BufferedReader reader1 = new BufferedReader(new FileReader(inputFilePath));
+             BufferedReader reader2 = new BufferedReader(new FileReader(inputFilePath2));
+             FileWriter writer = new FileWriter(outputFilePath)) {
+
+            // 添加首行内容
+            writer.append("method,url,accept,acceptEncoding,acceptLanguage,connection,cookie,useAgent,params,body,contentType,qunheid,xToolName,xQhUserId,xQhAccountId,unknow\n");
+
+            String line;
+            while ((line = reader1.readLine()) != null) {
+                String[] fields = line.split("\\|\\|\\|",-1);
+                for (int i = 0; i < fields.length; i++) {
+                    writer.append(escapeSpecialCharacters(fields[i]));
+                    if (i != fields.length - 1) {
+                        writer.append(",");
+                    }
+                }
+                writer.append("\n");
+            }
+
+            while ((line = reader2.readLine()) != null) {
+                String[] fields = line.split("\\|\\|\\|",-1);
+                for (int i = 0; i < fields.length; i++) {
+                    writer.append(escapeSpecialCharacters(fields[i]));
+                    if (i != fields.length - 1) {
+                        writer.append(",");
+                    }
+                }
+                writer.append("\n");
+            }
+
+            System.out.println("转换完成！");
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private static String escapeSpecialCharacters(String field) {
+        if (field.contains(",")) {
+            field = field.replace("\"","\"\"");
+            field = "\"" + field + "\"";
+        }
+        return field;
+    }
+
 }

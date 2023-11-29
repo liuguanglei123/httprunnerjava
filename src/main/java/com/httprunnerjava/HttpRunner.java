@@ -189,7 +189,7 @@ public class HttpRunner {
             }
             extractMapping = this.runStep(step);
         } catch (Exception e){
-            log.error("用例执行过程中出现错误，用例尚未执行完成，请检查！");
+            log.error("用例执行过程中出现错误，用例尚未执行完成，请检查，错误信息为：", e);
             throw e;
         }
 

@@ -32,7 +32,7 @@ public class JsonUtils {
             String jsonArrayStr1 = jsonArray1.toJSONString();
             String jsonArrayStr2 = jsonArray2.toJSONString();
             JSONAssert.assertEquals(jsonArrayStr1, jsonArrayStr2, jsonCompareMode);
-        }catch (Exception e){
+        }catch (Exception | AssertionError e){
             try{
                 //再尝试解析为jsonObject格式，判断是否相等
                 JSONObject jsonObject1 = JSONObject.parseObject(json1);
@@ -40,7 +40,9 @@ public class JsonUtils {
                 String jsonObjectStr1 = jsonObject1.toJSONString();
                 String jsonObjectStr2 = jsonObject2.toJSONString();
                 JSONAssert.assertEquals(jsonObjectStr1, jsonObjectStr2, jsonCompareMode);
-            }catch (Exception e1){
+            }catch (Exception | AssertionError e1){
+                log.error("比对的数据不一致，解析为array时，比对差异信息为" + e.getMessage());
+                log.error("比对的数据不一致，解析为map时，比对差异信息为" + e1.getMessage());
                 throw new AssertionError("要比对的json不一致!");
             }
         }

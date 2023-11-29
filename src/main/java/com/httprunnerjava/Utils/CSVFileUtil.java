@@ -1,5 +1,6 @@
 package com.httprunnerjava.utils;
 
+import com.alibaba.fastjson.JSON;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.*;
@@ -53,7 +54,7 @@ public class CSVFileUtil {
                 lines.add(sb.toString());
             }
         } catch (Exception e) {
-            log.error("Read CSV file failure :%", e);
+            log.error("Read CSV file failure :", e);
         } finally {
             try {
                 if (br != null) {
@@ -157,10 +158,18 @@ public class CSVFileUtil {
         String[] fields = firstLine.split(",");
         for (int i = 1; i < list.size(); i++) {
             String valueLine = list.get(i);
+            if(valueLine.contains("tag")){
+                continue;
+            }
             String[] valueItems = CSVFileUtil.fromCSVLine(valueLine);
             Map<String, String> map = new HashMap<>();
-            for (int j = 0; j < fields.length; j++) {
-                map.put(fields[j], valueItems[j]);
+            try {
+                for (int j = 0; j < fields.length; j++) {
+                        map.put(fields[j], valueItems[j]);
+                }
+            }catch (Exception e){
+                log.error("加载的内容出错了，出错的行内容为" + JSON.toJSONString(valueItems) + ",改行将跳过",e);
+                continue;
             }
             resultList.add(map);
         }
@@ -225,7 +234,9 @@ public class CSVFileUtil {
         while (next < nextComma) {
             char ch = source.charAt(next++);
             if (ch == '"') {
-                if ((st + 1 < next && next < nextComma) && (source.charAt(next) == '"')) {
+                if ((st + 1 < next && next < nextComma) && (source.charAt(next) != '"')) {
+                    strb.append(ch);
+                } else if ((st + 1 < next && next < nextComma) && (source.charAt(next) == '"')) {
                     strb.append(ch);
                     next++;
                 }
