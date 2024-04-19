@@ -5,7 +5,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>com.httprunnerjava</groupId>
   <artifactId>hrun</artifactId>
-  <version>0.3.50</version>
+  <version>0.3.51</version>
   <name>httprunnerjava</name>
   <url>https://github.com/liuguanglei123/httprunner_for_java_form_cc</url>
   <description>httprunnerjava</description>
