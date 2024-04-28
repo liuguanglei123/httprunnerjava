@@ -11,6 +11,10 @@ import lombok.extern.slf4j.Slf4j;
 @Data
 @Slf4j
 public class Config {
+    // 重试时间
+    public static Long waitTime = 10000L;
+    // 重试次数
+    public static int maxRetryCount = 2;
 
     // 一个HttpRunner中仅有一个Config，该名字即为整个测试类的名字
     private LazyString name;
@@ -55,31 +59,33 @@ public class Config {
         this.weight = 1;
         this.timeOut = 5000L;
         this.retryType = RetryTypeEnum.SINGLESTEP;
+        waitTime = 10000L;
+        maxRetryCount = 2;
     }
 
-    public Config variables(String variablesStr){
+    public Config variables(String variablesStr) {
         Variables tmpVar = new Variables(variablesStr);
         this.variables.update(tmpVar);
         return this;
     }
 
-    public Config base_url(String base_url){
+    public Config base_url(String base_url) {
         this.baseUrl = new LazyString(base_url);
         return this;
     }
 
-    public Config verify(Boolean verify){
+    public Config verify(Boolean verify) {
         this.verify = verify;
         return this;
     }
 
-    public Config export(String export_var_name_str){
+    public Config export(String export_var_name_str) {
         this.export.update(new Export(export_var_name_str));
         return this;
     }
 
-    public Config withLocalDebug(Boolean isProxy){
-        if(isProxy) {
+    public Config withLocalDebug(Boolean isProxy) {
+        if (isProxy) {
             log.warn("已开启代理模式，所有请求将请求到 127.0.0.1:8888，请确认代理服务器状态。");
         }
 
@@ -87,24 +93,36 @@ public class Config {
         return this;
     }
 
-    public Config withRetryType(RetryTypeEnum retryType){
+    public Config withRetryType(RetryTypeEnum retryType) {
         this.retryType = retryType;
         log.debug("当前重试模式为：" + retryType.getRetryDescription());
 
         return this;
     }
 
-    public Config withCatchAllExpection(Boolean resumeAfterException){
+    public Config withCatchAllExpection(Boolean resumeAfterException) {
         this.resumeAfterException = resumeAfterException;
         return this;
     }
 
-    public Config withTimeOut(Long timeOut){
+    public Config withTimeOut(Long timeOut) {
         this.timeOut = timeOut;
         return this;
     }
 
-    public void updateVariables(Variables var){
+    public void updateVariables(Variables var) {
         variables.update(var);
     }
+
+    public Config waitTime(Long waitTime) {
+        Config.waitTime = waitTime;
+        return this;
+    }
+
+    public Config maxRetryCount(int maxRetryCount) {
+        Config.maxRetryCount = maxRetryCount;
+        return this;
+    }
+
+
 }
