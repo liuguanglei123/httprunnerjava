@@ -16,7 +16,9 @@ public class ComplexResultValidateTest extends HttpRunner {
             .base_url("http://postman-echo.com")
 //            .withLocalDebug(true)
             .verify(false)
-            .export("['foo3']");
+            .export("['foo3']")
+            .waitTime(1000L)
+            .maxRetryCount(1);
 
     private List<Step> teststeps = new ArrayList<Step>(){{
 
