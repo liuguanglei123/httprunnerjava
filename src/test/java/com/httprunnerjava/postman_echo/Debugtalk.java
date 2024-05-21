@@ -3,7 +3,7 @@ package com.httprunnerjava.postman_echo;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.httprunnerjava.Loader;
-import com.httprunnerjava.postman_echo.gitignore.po.TobBusinessAccount;
+//import com.httprunnerjava.postman_echo.gitignore.po.TobBusinessAccount;
 import com.httprunnerjava.utils.CSVFileUtil;
 import okhttp3.*;
 
@@ -109,92 +109,92 @@ public class Debugtalk {
         return result;
     }
 
-    public Map<String,Object> getAllOrgAccountIdsMap() {
-        List<Long> allAccountIds = getAllOrgAccountIds("http://xxxx.k8s-txyun-prod.xxxx.com");
-        Map<String,Object> result = new HashMap<>();
-        result.put("orgId", allAccountIds);
+//    public Map<String,Object> getAllOrgAccountIdsMap() {
+//        List<Long> allAccountIds = getAllOrgAccountIds("http://xxxx.k8s-txyun-prod.xxxx.com");
+//        Map<String,Object> result = new HashMap<>();
+//        result.put("orgId", allAccountIds);
+//
+//        return result;
+//    }
 
-        return result;
-    }
+//    public List<Long> getAllOrgAccountIds(String saasBusinessAccountUrl){
+//        List<Long> result = new ArrayList<>();
+//        Long startAccountId = 0L;
+//
+//        int i = 0;
+//        while(i<100){
+//            try {
+//                String resultStr = "";
+//                OkHttpClient client = new OkHttpClient();
+//                RequestBody body = RequestBody.create(String.format("{\"accountId\":%s,\"fields\":[\"accountId\"],\"num\":2000}",startAccountId), JSON_BODY_MEDIA);
+//
+//                Request request = new Request.Builder()
+//                        .url(saasBusinessAccountUrl + "/xxxx/xxxx-account/api/tob-xxxx-account-service/xxxx")
+//                        .post(body)
+//                        .build();
+//
+//                Response response = client.newCall(request).execute();
+//                resultStr = response.body().string();
+//                List<TobBusinessAccount> accountInfoList = JSONArray.parseArray(resultStr, TobBusinessAccount.class);
+//                if(CollectionUtils.isEmpty(accountInfoList)){
+//                    break;
+//                }
+//                List<Long> accountIdList= accountInfoList.stream().map(TobBusinessAccount::getAccountId).collect(Collectors.toList());
+//                startAccountId = Collections.max(accountIdList);
+//                result.addAll(accountIdList);
+//            }catch (Exception e){
+//                System.out.println("error");
+//            }
+//
+//            i++;
+//        }
+//
+//        return result;
+//    }
 
-    public List<Long> getAllOrgAccountIds(String saasBusinessAccountUrl){
-        List<Long> result = new ArrayList<>();
-        Long startAccountId = 0L;
+//    public Map<String,Object> getAllOrgUserIdsMap() {
+//        List<Long> allUserIds = getAllOrgUserIds("http://xxxx.k8s-txyun-prod.xxxx.com");
+//        Map<String,Object> result = new HashMap<>();
+//        result.put("userId", allUserIds);
+//
+//        return result;
+//    }
 
-        int i = 0;
-        while(i<100){
-            try {
-                String resultStr = "";
-                OkHttpClient client = new OkHttpClient();
-                RequestBody body = RequestBody.create(String.format("{\"accountId\":%s,\"fields\":[\"accountId\"],\"num\":2000}",startAccountId), JSON_BODY_MEDIA);
-
-                Request request = new Request.Builder()
-                        .url(saasBusinessAccountUrl + "/xxxx/xxxx-account/api/tob-xxxx-account-service/xxxx")
-                        .post(body)
-                        .build();
-
-                Response response = client.newCall(request).execute();
-                resultStr = response.body().string();
-                List<TobBusinessAccount> accountInfoList = JSONArray.parseArray(resultStr, TobBusinessAccount.class);
-                if(CollectionUtils.isEmpty(accountInfoList)){
-                    break;
-                }
-                List<Long> accountIdList= accountInfoList.stream().map(TobBusinessAccount::getAccountId).collect(Collectors.toList());
-                startAccountId = Collections.max(accountIdList);
-                result.addAll(accountIdList);
-            }catch (Exception e){
-                System.out.println("error");
-            }
-
-            i++;
-        }
-
-        return result;
-    }
-
-    public Map<String,Object> getAllOrgUserIdsMap() {
-        List<Long> allUserIds = getAllOrgUserIds("http://xxxx.k8s-txyun-prod.xxxx.com");
-        Map<String,Object> result = new HashMap<>();
-        result.put("userId", allUserIds);
-
-        return result;
-    }
-
-    public List<Long> getAllOrgUserIds(String saasBusinessAccountUrl){
-        List<Long> result = new ArrayList<>();
-        Long startAccountId = 0L;
-
-        int i = 0;
-        while(i<100){
-            try {
-                String resultStr = "";
-                OkHttpClient client = new OkHttpClient();
-                RequestBody body = RequestBody.create(String.format("{\"accountId\":%s,\"fields\":[\"accountId\",\"userId\"],\"num\":1000}",startAccountId), JSON_BODY_MEDIA);
-
-                Request request = new Request.Builder()
-                        .url(saasBusinessAccountUrl + "/xxxx/business-account/api/tob-xxxx-account-service/xxxx")
-                        .post(body)
-                        .build();
-
-                Response response = client.newCall(request).execute();
-                resultStr = response.body().string();
-                List<TobBusinessAccount> accountInfoList = JSONArray.parseArray(resultStr, TobBusinessAccount.class);
-                if(CollectionUtils.isEmpty(accountInfoList)){
-                    break;
-                }
-                List<Long> userIdList= accountInfoList.stream().map(TobBusinessAccount::getUserId).collect(Collectors.toList());
-                List<Long> accountIdList= accountInfoList.stream().map(TobBusinessAccount::getAccountId).collect(Collectors.toList());
-                startAccountId = Collections.max(accountIdList);
-                result.addAll(userIdList);
-            }catch (Exception e){
-                System.out.println("error");
-            }
-
-            i++;
-        }
-
-        return result;
-    }
+//    public List<Long> getAllOrgUserIds(String saasBusinessAccountUrl){
+//        List<Long> result = new ArrayList<>();
+//        Long startAccountId = 0L;
+//
+//        int i = 0;
+//        while(i<100){
+//            try {
+//                String resultStr = "";
+//                OkHttpClient client = new OkHttpClient();
+//                RequestBody body = RequestBody.create(String.format("{\"accountId\":%s,\"fields\":[\"accountId\",\"userId\"],\"num\":1000}",startAccountId), JSON_BODY_MEDIA);
+//
+//                Request request = new Request.Builder()
+//                        .url(saasBusinessAccountUrl + "/xxxx/business-account/api/tob-xxxx-account-service/xxxx")
+//                        .post(body)
+//                        .build();
+//
+//                Response response = client.newCall(request).execute();
+//                resultStr = response.body().string();
+//                List<TobBusinessAccount> accountInfoList = JSONArray.parseArray(resultStr, TobBusinessAccount.class);
+//                if(CollectionUtils.isEmpty(accountInfoList)){
+//                    break;
+//                }
+//                List<Long> userIdList= accountInfoList.stream().map(TobBusinessAccount::getUserId).collect(Collectors.toList());
+//                List<Long> accountIdList= accountInfoList.stream().map(TobBusinessAccount::getAccountId).collect(Collectors.toList());
+//                startAccountId = Collections.max(accountIdList);
+//                result.addAll(userIdList);
+//            }catch (Exception e){
+//                System.out.println("error");
+//            }
+//
+//            i++;
+//        }
+//
+//        return result;
+//    }
 
     public static String getRandomStrings(String csvFile, String count) {
         String newCsvFilePath =  csvFile.replace("/","\\");
